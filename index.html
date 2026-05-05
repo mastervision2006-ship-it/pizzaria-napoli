@@ -256,7 +256,7 @@
       </div>
       <div style="flex:1;min-width:0;">
         <h1 class="font-display" style="font-size:1.35rem;font-weight:700;color:#3E3E3E;line-height:1.2;margin-bottom:3px;">Pizzaria Napoli</h1>
-        <p style="font-size:.8rem;color:#717171;margin-bottom:8px;">⭐ 4.9 · <span style="text-decoration:underline;cursor:pointer;">2.3k avaliações</span> · Italiana</p>
+        <p style="font-size:.8rem;color:#717171;margin-bottom:8px;">⭐ 4.9 · <span onclick="openReviewsModal()" style="text-decoration:underline;cursor:pointer;color:var(--red);font-weight:600;">103 avaliações</span> · Italiana</p>
         <div style="display:flex;flex-wrap:wrap;gap:10px;">
           <span class="info-pill">🛵 Até 30 min</span>
           <span style="color:#DCDCDC;">|</span>
@@ -305,9 +305,6 @@
   <main style="max-width:580px;margin:0 auto;padding-bottom:6rem;">
     <div id="products-container"></div>
   </main>
-
-  <!-- ── REVIEWS ── -->
-  <div id="reviews-section" style="max-width:580px;margin:0 auto 8px;"></div>
 
   <footer style="background:#fff;border-top:1px solid #EFEFEF;padding:1.5rem 1rem;text-align:center;max-width:580px;margin:0 auto;">
     <p style="font-size:.8125rem;font-weight:500;color:#717171;">© 2026 Pizzaria Napoli · Feito com ❤️</p>
@@ -486,6 +483,26 @@
 
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     REVIEWS MODAL (bottom sheet)
+═══════════════════════════════════════════ -->
+<div id="reviews-modal" style="display:none;position:fixed;inset:0;z-index:60;">
+  <div class="modal-bg" style="animation:fadeIn .25s ease;" onclick="closeReviewsModal()"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;max-width:580px;margin:0 auto;background:#fff;border-radius:1.75rem 1.75rem 0 0;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;animation:slideBottom .35s cubic-bezier(.16,1,.3,1);">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.125rem 1.25rem 1rem;border-bottom:1px solid #F0F0F0;flex-shrink:0;">
+      <div>
+        <h2 style="font-size:1rem;font-weight:700;color:#3E3E3E;">Avaliações</h2>
+        <p style="font-size:.75rem;color:#717171;margin-top:1px;">Pizzaria Napoli</p>
+      </div>
+      <button onclick="closeReviewsModal()" style="width:34px;height:34px;border-radius:50%;background:#F5F5F5;border:none;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;color:#717171;">✕</button>
+    </div>
+    <!-- Scrollable content -->
+    <div id="reviews-modal-content" style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;"></div>
   </div>
 </div>
 
@@ -1760,9 +1777,7 @@ function reviewStarsHtml(n, size){
   return `<span style="color:#FFB800;font-size:${sz};letter-spacing:.5px;">${'★'.repeat(n)}${'☆'.repeat(5-n)}</span>`;
 }
 
-let _reviewsExpanded = false;
-
-function renderReviewsSection(){
+function openReviewsModal(){
   const total = REVIEWS.length;
   const five  = REVIEWS.filter(r=>r.stars===5).length;
   const four  = REVIEWS.filter(r=>r.stars===4).length;
@@ -1771,25 +1786,25 @@ function renderReviewsSection(){
   const pct4  = Math.round(four/total*100);
 
   const barRow = (stars,count,pct) => `
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
-      <span style="font-size:.72rem;color:#717171;width:8px;text-align:right;">${stars}</span>
-      <span style="color:#FFB800;font-size:.62rem;">★</span>
-      <div style="flex:1;height:4px;background:#F0F0F0;border-radius:2px;overflow:hidden;">
-        <div style="height:100%;width:${pct}%;background:#FFB800;border-radius:2px;transition:width .4s;"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span style="font-size:.75rem;color:#3E3E3E;font-weight:500;width:8px;text-align:right;flex-shrink:0;">${stars}</span>
+      <span style="color:#FFB800;font-size:.65rem;flex-shrink:0;">★</span>
+      <div style="flex:1;height:5px;background:#F0F0F0;border-radius:3px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:#FFB800;border-radius:3px;"></div>
       </div>
-      <span style="font-size:.7rem;color:#9E9E9E;width:18px;text-align:right;">${count}</span>
+      <span style="font-size:.72rem;color:#9E9E9E;width:22px;text-align:right;flex-shrink:0;">${count}</span>
     </div>`;
 
   const reviewCard = r => {
     const init = r.name.charAt(0).toUpperCase();
     const col  = avatarColor(r.name);
-    const day  = r.days===1 ? 'há 1 dia' : `há ${r.days} dias`;
+    const day  = r.days === 1 ? 'há 1 dia' : `há ${r.days} dias`;
     return `<div style="padding:1rem 1.25rem;border-bottom:1px solid #F5F5F5;">
       <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:.5rem;">
         <div style="width:38px;height:38px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0;">${init}</div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:.875rem;font-weight:600;color:#3E3E3E;">${esc(r.name)}</div>
-          <div style="display:flex;align-items:center;gap:7px;margin-top:1px;">
+          <div style="display:flex;align-items:center;gap:7px;margin-top:2px;">
             ${reviewStarsHtml(r.stars,'.8rem')}
             <span style="font-size:.7rem;color:#9E9E9E;">· ${day}</span>
           </div>
@@ -1799,47 +1814,32 @@ function renderReviewsSection(){
     </div>`;
   };
 
-  const visible = _reviewsExpanded ? REVIEWS : REVIEWS.slice(0,5);
-  const remaining = total - 5;
+  document.getElementById('reviews-modal-content').innerHTML = `
+    <!-- Summary -->
+    <div style="padding:1.25rem;display:flex;align-items:center;gap:1.5rem;border-bottom:1px solid #F0F0F0;">
+      <div style="text-align:center;flex-shrink:0;">
+        <div style="font-size:3rem;font-weight:900;color:#3E3E3E;line-height:1;">${avg}</div>
+        <div style="margin-top:5px;">${reviewStarsHtml(5,'.9rem')}</div>
+        <div style="font-size:.7rem;color:#9E9E9E;margin-top:4px;">${total} avaliações</div>
+      </div>
+      <div style="flex:1;min-width:0;">
+        ${barRow(5,five,pct5)}
+        ${barRow(4,four,pct4)}
+        ${barRow(3,0,0)}
+        ${barRow(2,0,0)}
+        ${barRow(1,0,0)}
+      </div>
+    </div>
+    <!-- All reviews -->
+    <div>${REVIEWS.map(reviewCard).join('')}</div>`;
 
-  document.getElementById('reviews-section').innerHTML = `
-    <div style="background:#fff;margin-bottom:8px;">
-      <!-- Header -->
-      <div style="padding:1rem 1.25rem .75rem;border-bottom:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between;">
-        <h2 style="font-size:1rem;font-weight:700;color:#3E3E3E;">Avaliações</h2>
-        <span style="font-size:.8rem;color:#717171;">${total} avaliações</span>
-      </div>
-      <!-- Summary -->
-      <div style="padding:1.125rem 1.25rem 1rem;display:flex;align-items:center;gap:1.25rem;border-bottom:1px solid #F0F0F0;">
-        <div style="text-align:center;flex-shrink:0;">
-          <div style="font-size:2.75rem;font-weight:900;color:#3E3E3E;line-height:1;">${avg}</div>
-          <div style="margin-top:4px;">${reviewStarsHtml(5,'.875rem')}</div>
-          <div style="font-size:.68rem;color:#9E9E9E;margin-top:3px;">${total} avaliações</div>
-        </div>
-        <div style="flex:1;min-width:0;">
-          ${barRow(5,five,pct5)}
-          ${barRow(4,four,pct4)}
-          ${barRow(3,0,0)}
-          ${barRow(2,0,0)}
-          ${barRow(1,0,0)}
-        </div>
-      </div>
-      <!-- Reviews list -->
-      <div id="reviews-list">
-        ${visible.map(reviewCard).join('')}
-      </div>
-      ${!_reviewsExpanded ? `
-      <div style="padding:.875rem 1.25rem;text-align:center;border-top:1px solid #F5F5F5;">
-        <button onclick="expandReviews()" style="background:none;border:1.5px solid var(--red);color:var(--red);font-weight:700;font-size:.8125rem;border-radius:9999px;padding:.55rem 1.5rem;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='var(--red)';this.style.color='#fff'" onmouseout="this.style.background='none';this.style.color='var(--red)'">
-          Ver mais ${remaining} avaliações
-        </button>
-      </div>` : ''}
-    </div>`;
+  document.getElementById('reviews-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
 }
 
-function expandReviews(){
-  _reviewsExpanded = true;
-  renderReviewsSection();
+function closeReviewsModal(){
+  document.getElementById('reviews-modal').style.display = 'none';
+  document.body.style.overflow = '';
 }
 
 (function init(){
@@ -1847,7 +1847,6 @@ function expandReviews(){
   updateCartBadge();
   updateCartQuickBar();
   renderMenu();
-  renderReviewsSection();
   initGeo();
 })();
 
