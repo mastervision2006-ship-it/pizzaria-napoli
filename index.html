@@ -33,10 +33,9 @@
     html{scroll-behavior:smooth;}
     body{
       font-family:'DM Sans',sans-serif;
-      background:var(--cream);
-      color:var(--text);
+      background:#F7F8FA;
+      color:#3E3E3E;
       min-height:100vh;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
     }
     .font-display{font-family:'Cormorant Garamond',serif;}
 
@@ -108,7 +107,7 @@
 
     /* ── Promo banner (featured card) ── */
     @keyframes timerBlink{0%,100%{opacity:1;}50%{opacity:.3;}}
-    .promo-featured{border-left:4px solid #C8872A !important;}
+    .promo-featured{background:#FFFDF8 !important;}
     .promo-timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--muted);}
     .promo-timer.urgent{animation:timerBlink .55s ease-in-out infinite;color:var(--red);}
     /* ── Combo flavor pickers ── */
@@ -163,31 +162,40 @@
     }
     .qty-btn:hover{background:var(--red);color:#fff;}
 
-    /* ── Hero ── */
-    .hero-bg{
-      background-image:
-        linear-gradient(to bottom, rgba(15,5,5,.3) 0%, rgba(15,5,5,.75) 100%),
-        url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&auto=format&q=85');
-      background-size:cover;
-      background-position:center;
+    /* ── Category tabs (iFood underline style) ── */
+    .cat-tab{
+      padding:.875rem 1rem;font-size:.875rem;font-weight:600;cursor:pointer;
+      border:none;border-bottom:2.5px solid transparent;background:transparent;
+      color:#717171;white-space:nowrap;transition:color .15s,border-color .15s;
+      flex-shrink:0;
+    }
+    .cat-tab.on{color:var(--red);border-bottom-color:var(--red);}
+
+    /* ── Product card (iFood horizontal) ── */
+    .p-card{
+      display:flex;align-items:center;
+      padding:1rem 1.25rem;background:#fff;cursor:pointer;
+      border-bottom:1px solid #F0F0F0;
+      transition:background .12s;
+    }
+    .p-card:last-child{border-bottom:none;}
+    .p-card:hover{background:#FAFAFA;}
+    .p-card:active{background:#F3F3F3;}
+
+    /* ── Product section ── */
+    .cat-section{background:#fff;margin-bottom:8px;}
+    .cat-section-header{
+      font-size:1rem;font-weight:700;color:#3E3E3E;
+      padding:1rem 1.25rem .5rem;
     }
 
-    /* ── Tab ── */
-    .tab{
-      padding:.45rem .875rem;border-radius:9999px;
-      font-size:.8125rem;font-weight:600;cursor:pointer;
-      border:1.5px solid var(--border);background:#fff;color:var(--muted);
-      transition:all .2s;white-space:nowrap;
+    /* ── Cover + restaurant info ── */
+    .cover-img{width:100%;height:200px;object-fit:cover;display:block;}
+    .rest-info{background:#fff;padding:1rem 1.25rem 1.25rem;border-bottom:1px solid #EFEFEF;}
+    .info-pill{
+      display:inline-flex;align-items:center;gap:4px;
+      font-size:.75rem;font-weight:500;color:#717171;
     }
-    .tab.on{
-      background:var(--red);color:#fff;border-color:var(--red);
-      box-shadow:0 4px 14px rgba(196,18,48,.35);
-    }
-
-    /* ── Card image zoom ── */
-    .card-img-wrap{overflow:hidden;}
-    .card-img-wrap img{transition:transform .4s cubic-bezier(.16,1,.3,1);}
-    .p-card:hover .card-img-wrap img{transform:scale(1.06);}
 
     /* ── PIX QR ── */
     #pix-qr{image-rendering:pixelated;}
@@ -196,98 +204,90 @@
 <body>
 
 <!-- ═══════════════════════════════════════════
-     STICKY HEADER
-═══════════════════════════════════════════ -->
-<div id="site-header" style="position:sticky;top:0;z-index:50;box-shadow:0 1px 16px rgba(28,10,10,.1);">
-
-  <!-- Geo banner -->
-  <div id="geo-banner" style="background:linear-gradient(135deg,#1DAA54,#0E8C42);padding:.55rem 1rem;display:flex;align-items:center;justify-content:center;gap:7px;">
-    <svg width="12" height="12" viewBox="0 0 20 20" fill="white" style="opacity:.85;flex-shrink:0;">
-      <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-    </svg>
-    <span id="geo-txt" style="font-size:.8125rem;font-weight:600;color:#fff;letter-spacing:.01em;">Verificando sua localização...</span>
-  </div>
-
-  <!-- Header row -->
-  <header style="background:#fff;border-bottom:1.5px solid var(--border);">
-    <div style="max-width:580px;margin:0 auto;padding:.875rem 1.25rem;display:flex;align-items:center;gap:12px;position:relative;">
-
-      <!-- Logo (centered) -->
-      <div style="flex:1;text-align:center;">
-        <h1 class="font-display" style="font-size:clamp(1.7rem,5vw,2.2rem);font-weight:700;color:var(--red);line-height:1;letter-spacing:-.01em;">Pizzaria Napoli</h1>
-        <p style="font-size:.68rem;font-weight:600;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;margin-top:2px;">As melhores pizzas da cidade</p>
-      </div>
-
-      <!-- Cart button -->
-      <button onclick="openCart()" style="position:absolute;right:1.25rem;width:44px;height:44px;border-radius:50%;background:var(--red);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(196,18,48,.35);transition:transform .15s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
-        </svg>
-        <span id="cart-badge" style="position:absolute;top:-2px;right:-2px;min-width:18px;height:18px;background:#FFC107;border-radius:9999px;border:2px solid var(--cream);font-size:.6rem;font-weight:800;color:#1C0A0A;display:none;align-items:center;justify-content:center;padding:0 4px;">0</span>
-      </button>
-
-      <!-- Hidden admin gear -->
-      <button onclick="switchView('admin')" title="Admin" tabindex="-1"
-        style="position:absolute;left:1.25rem;width:32px;height:32px;border-radius:50%;border:none;background:transparent;cursor:pointer;opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center;"
-        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'" onfocus="this.style.opacity='1'" onblur="this.style.opacity='0'">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-      </button>
-    </div>
-
-    <!-- Category tabs -->
-    <div style="max-width:580px;margin:0 auto;padding:0 1rem .875rem;display:flex;gap:8px;overflow-x:auto;">
-      <button id="tab-all"   class="tab on"  onclick="filterCat('all')">🍽️ Todos</button>
-      <button id="tab-Pizza" class="tab"     onclick="filterCat('Pizza')">🍕 Pizzas</button>
-      <button id="tab-Combo" class="tab"     onclick="filterCat('Combo')">🎁 Combos</button>
-    </div>
-  </header>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     MENU VIEW
+     MENU VIEW  (iFood-style layout)
 ═══════════════════════════════════════════ -->
 <div id="menu-view">
 
-  <!-- Hero -->
-  <section class="hero-bg" style="padding:3rem 1.5rem 2.5rem;text-align:center;">
-    <div style="max-width:480px;margin:0 auto;">
-      <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .875rem;border-radius:9999px;margin-bottom:1rem;">
-        🔥 Abre às 18h • Delivery em 30min
-      </span>
-      <h2 class="font-display" style="font-size:clamp(2.4rem,8vw,3.5rem);font-weight:700;color:#fff;line-height:1.1;margin-bottom:.75rem;">
-        Sabor que<br/><em>conquista</em>
-      </h2>
-      <div style="display:flex;align-items:center;justify-content:center;gap:6px;color:rgba(255,255,255,.85);font-size:.8125rem;font-weight:500;">
-        <span style="letter-spacing:.05em;">⭐⭐⭐⭐⭐</span>
-        <span>4.9 · 2.3k avaliações</span>
-      </div>
-    </div>
-  </section>
+  <!-- ── COVER PHOTO ── -->
+  <div style="position:relative;max-width:580px;margin:0 auto;">
+    <img class="cover-img"
+      src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&auto=format&q=85"
+      alt="Pizzaria Napoli"/>
+    <!-- Cart button over cover -->
+    <button onclick="openCart()" style="position:absolute;top:12px;right:14px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.18);transition:transform .15s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span id="cart-badge" style="position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;background:var(--red);border-radius:9999px;border:2px solid #fff;font-size:.6rem;font-weight:800;color:#fff;display:none;align-items:center;justify-content:center;padding:0 4px;">0</span>
+    </button>
+    <!-- Hidden admin gear -->
+    <button onclick="switchView('admin')" title="Admin" tabindex="-1"
+      style="position:absolute;top:12px;left:14px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.75);backdrop-filter:blur(6px);cursor:pointer;opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center;"
+      onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#717171" stroke-width="1.8" stroke-linecap="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+    </button>
+  </div>
 
-  <!-- Cart quick bar (shown when cart has items) -->
-  <div id="cart-quick-bar" style="display:none;max-width:580px;margin:0 auto;padding:.5rem 1rem 0;">
-    <div style="background:#fff;border:1.5px solid var(--border);border-radius:1.1rem;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;box-shadow:0 3px 12px rgba(196,18,48,.08);">
-      <div style="display:flex;align-items:center;gap:8px;min-width:0;">
-        <span style="font-size:1.1rem;">🛒</span>
-        <div style="min-width:0;">
-          <span id="cqb-count" style="font-size:.72rem;color:var(--muted);display:block;"></span>
-          <span id="cqb-total" style="font-size:1rem;font-weight:800;color:var(--red);"></span>
+  <!-- ── RESTAURANT INFO ── -->
+  <div class="rest-info" style="max-width:580px;margin:0 auto;">
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <!-- Logo -->
+      <div style="width:68px;height:68px;border-radius:14px;overflow:hidden;border:2px solid #EFEFEF;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+        <img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=200&fit=crop&auto=format&q=80" alt="Logo" style="width:100%;height:100%;object-fit:cover;"/>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <h1 class="font-display" style="font-size:1.35rem;font-weight:700;color:#3E3E3E;line-height:1.2;margin-bottom:3px;">Pizzaria Napoli</h1>
+        <p style="font-size:.8rem;color:#717171;margin-bottom:8px;">⭐ 4.9 · <span style="text-decoration:underline;cursor:pointer;">2.3k avaliações</span> · Italiana</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <span class="info-pill">🛵 Até 30 min</span>
+          <span style="color:#DCDCDC;">|</span>
+          <span class="info-pill" id="geo-txt">📍 Verificando local...</span>
+          <span style="color:#DCDCDC;">|</span>
+          <span class="info-pill">💚 Frete grátis</span>
         </div>
       </div>
-      <button onclick="openCheckout()" class="btn-red" style="padding:.6rem 1.125rem;font-size:.8125rem;border-radius:.875rem;white-space:nowrap;flex-shrink:0;">
+    </div>
+    <!-- Status + min order bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid #F0F0F0;flex-wrap:wrap;gap:6px;">
+      <div id="geo-banner" style="display:flex;align-items:center;gap:6px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#1DAA54;display:inline-block;"></span>
+        <span style="font-size:.8rem;font-weight:600;color:#3E3E3E;">Aberto agora · Fecha às 23h</span>
+      </div>
+      <span style="font-size:.75rem;color:#717171;">Pedido mín. <strong style="color:#3E3E3E;">R$ 20,00</strong></span>
+    </div>
+  </div>
+
+  <!-- ── STICKY CATEGORY TABS ── -->
+  <div id="site-header" style="position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #EFEFEF;max-width:100%;">
+    <div style="max-width:580px;margin:0 auto;display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <button id="tab-all"   class="cat-tab on"  onclick="filterCat('all')">Todos</button>
+      <button id="tab-Pizza" class="cat-tab"      onclick="filterCat('Pizza')">🍕 Pizzas</button>
+      <button id="tab-Combo" class="cat-tab"      onclick="filterCat('Combo')">🎁 Combos</button>
+    </div>
+  </div>
+
+  <!-- ── CART QUICK BAR ── -->
+  <div id="cart-quick-bar" style="display:none;position:sticky;top:48px;z-index:45;max-width:580px;margin:0 auto;padding:.625rem 1rem;">
+    <div style="background:var(--red);border-radius:1rem;padding:.75rem 1.125rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;box-shadow:0 4px 18px rgba(196,18,48,.35);">
+      <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <div style="min-width:0;">
+          <span id="cqb-count" style="font-size:.72rem;color:rgba(255,255,255,.8);display:block;"></span>
+          <span id="cqb-total" style="font-size:1rem;font-weight:800;color:#fff;"></span>
+        </div>
+      </div>
+      <button onclick="openCheckout()" style="background:#fff;color:var(--red);font-weight:700;font-size:.8125rem;border:none;border-radius:.875rem;padding:.55rem 1.125rem;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:opacity .15s;" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
         Finalizar Pedido →
       </button>
     </div>
   </div>
 
-  <!-- Products -->
-  <main style="max-width:580px;margin:0 auto;padding:1.75rem 1rem 8rem;">
+  <!-- ── PRODUCTS ── -->
+  <main style="max-width:580px;margin:0 auto;padding-bottom:6rem;">
     <div id="products-container"></div>
   </main>
 
-  <footer style="background:#fff;border-top:1.5px solid var(--border);padding:1.5rem 1rem;text-align:center;">
-    <p style="font-size:.8125rem;font-weight:500;color:var(--muted);">© 2026 Pizzaria Napoli · Feito com ❤️</p>
-    <button onclick="switchView('admin')" style="margin-top:.5rem;font-size:.7rem;color:var(--border);background:none;border:none;cursor:pointer;">⚙ Admin</button>
+  <footer style="background:#fff;border-top:1px solid #EFEFEF;padding:1.5rem 1rem;text-align:center;max-width:580px;margin:0 auto;">
+    <p style="font-size:.8125rem;font-weight:500;color:#717171;">© 2026 Pizzaria Napoli · Feito com ❤️</p>
+    <button onclick="switchView('admin')" style="margin-top:.5rem;font-size:.7rem;color:#D0D0D0;background:none;border:none;cursor:pointer;">⚙ Admin</button>
   </footer>
 </div>
 
@@ -798,36 +798,33 @@ function renderMenu(){
   // ── Featured promo banner (Combo Napoli Perfeito) ──
   if(combo && (activeCat==='all' || activeCat==='Combo')){
     html += `
-      <article class="p-card promo-featured" onclick="openProductModal(13)"
-        style="background:#fff;border-radius:1.1rem;overflow:hidden;display:flex;border:1.5px solid var(--border);cursor:pointer;box-shadow:0 2px 14px rgba(196,18,48,.06);margin-bottom:1.5rem;transition:box-shadow .2s,border-color .2s;"
-        onmouseover="this.style.boxShadow='0 8px 28px rgba(196,18,48,.13)';this.style.borderColor='#F9C0C0';"
-        onmouseout="this.style.boxShadow='0 2px 14px rgba(196,18,48,.06)';this.style.borderColor='var(--border)';">
-        <!-- Image -->
-        <div style="width:120px;flex-shrink:0;position:relative;overflow:hidden;">
-          <img src="${combo.image}" alt="${esc(combo.name)}" style="width:100%;height:100%;object-fit:cover;display:block;"/>
-          <span style="position:absolute;top:8px;left:8px;background:#C8872A;color:#fff;font-size:.58rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:.22rem .5rem;border-radius:9999px;">⭐ Destaque</span>
+      <div class="cat-section" style="margin-bottom:8px;">
+        <div class="cat-section-header" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>⭐ Destaque</span>
+          <span style="font-size:.7rem;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:4px;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Encerra em <span id="promo-timer" class="promo-timer">15:00</span>
+          </span>
         </div>
-        <!-- Content -->
-        <div style="flex:1;padding:.875rem .875rem .75rem;display:flex;flex-direction:column;justify-content:space-between;min-width:0;">
-          <div>
-            <h3 class="font-display" style="font-size:1.15rem;font-weight:700;line-height:1.2;margin-bottom:.3rem;">${esc(combo.name)}</h3>
-            <p style="font-size:.72rem;color:var(--muted);line-height:1.5;">🍕 Pizza GG &nbsp;·&nbsp; 🥤 Refri 2L &nbsp;·&nbsp; 🍫 Brotinho Doce</p>
+        <div class="p-card promo-featured" onclick="openProductModal(13)" style="border-left:none;border-top:1px solid #F0F0F0;">
+          <div style="flex:1;min-width:0;padding-right:14px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <span style="background:#C8872A;color:#fff;font-size:.58rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .5rem;border-radius:9999px;">Combo</span>
+              <span style="font-size:.65rem;font-weight:700;background:#1DAA54;color:#fff;padding:.15rem .45rem;border-radius:9999px;">🛵 Grátis</span>
+            </div>
+            <h3 style="font-size:.9375rem;font-weight:600;color:#3E3E3E;line-height:1.35;margin-bottom:4px;">${esc(combo.name)}</h3>
+            <p style="font-size:.8125rem;color:#717171;line-height:1.45;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">Pizza GG + Refri 2L + Brotinho Doce</p>
+            <p style="font-size:.9375rem;font-weight:700;color:var(--red);margin:0;">R$ 59,90</p>
           </div>
-          <div style="margin-top:.625rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.25rem;">
-              <div style="display:flex;align-items:baseline;gap:6px;">
-                <span style="font-size:1.25rem;font-weight:800;color:var(--red);">R$ 59,90</span>
-                <span style="font-size:.65rem;font-weight:700;background:#1DAA54;color:#fff;padding:.15rem .45rem;border-radius:9999px;">🛵 Grátis</span>
-              </div>
-            </div>
-            <div style="display:flex;align-items:center;gap:4px;margin-top:.45rem;padding-top:.45rem;border-top:1px solid var(--border);">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-              <span style="font-size:.7rem;color:var(--muted);">Oferta encerra em</span>
-              <span id="promo-timer" class="promo-timer" style="font-size:.7rem;color:var(--muted);">15:00</span>
-            </div>
+          <div style="flex-shrink:0;position:relative;">
+            <img src="${combo.image}" alt="${esc(combo.name)}"
+              style="width:96px;height:96px;object-fit:cover;border-radius:10px;display:block;"
+              onerror="this.src='https://placehold.co/96x96/FEE2E2/C41230?text=Combo'"/>
+            <button onclick="event.stopPropagation();openProductModal(13)"
+              style="position:absolute;bottom:-8px;right:-8px;width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;border:2.5px solid #F7F8FA;cursor:pointer;font-size:1.25rem;font-weight:300;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(196,18,48,.4);transition:transform .12s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">+</button>
           </div>
         </div>
-      </article>`;
+      </div>`;
     startPromoTimer();
   }
 
@@ -835,16 +832,10 @@ function renderMenu(){
     const items = prods.filter(p=>p.category===cat);
     if(!items.length) continue;
     html += `
-      <section style="margin-bottom:2.5rem;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
-          <h2 class="font-display" style="font-size:1.6rem;font-weight:700;white-space:nowrap;">${labels[cat]}</h2>
-          <div style="flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);"></div>
-          <span style="font-size:.7rem;font-weight:600;color:var(--muted);flex-shrink:0;">${items.length} opções</span>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          ${items.map(renderCard).join('')}
-        </div>
-      </section>`;
+      <div class="cat-section" id="section-${cat}">
+        <div class="cat-section-header">${labels[cat]}</div>
+        ${items.map(renderCard).join('')}
+      </div>`;
   }
 
   if(!html) html = `<div style="text-align:center;padding:5rem 1rem;"><div style="font-size:3.5rem;margin-bottom:1rem;">🍕</div><p style="font-weight:600;color:var(--muted);">Nenhum produto encontrado</p></div>`;
@@ -852,35 +843,30 @@ function renderMenu(){
 }
 
 function renderCard(p){
-  const price    = fmt(p.price);
-  const fallback = `https://placehold.co/600x400/fee2e2/c41230?text=${encodeURIComponent(p.name)}`;
+  const fallback = `https://placehold.co/88x88/FEE2E2/C41230?text=${encodeURIComponent(p.name.charAt(0))}`;
   const img      = p.image || fallback;
-  const badgeBg  = p.category==='Pizza' ? 'rgba(196,18,48,.88)' : 'rgba(200,135,42,.92)';
-  const sizeNote = p.category==='Pizza' ? '<span style="font-size:.65rem;color:var(--muted);">a partir de</span>' : '';
-
+  const sizeNote = p.category==='Pizza' ? '<span style="font-size:.72rem;color:#717171;font-weight:400;">a partir de </span>' : '';
+  const desc     = p.description ? esc(p.description) : '';
   return `
-    <article class="p-card" onclick="openProductModal(${p.id})" style="background:#fff;border-radius:1.1rem;overflow:hidden;display:flex;border:1.5px solid var(--border);transition:box-shadow .2s,border-color .2s;cursor:pointer;box-shadow:0 2px 14px rgba(196,18,48,.05);" onmouseover="this.style.boxShadow='0 8px 28px rgba(196,18,48,.13)';this.style.borderColor='#F9C0C0';" onmouseout="this.style.boxShadow='0 2px 14px rgba(196,18,48,.05)';this.style.borderColor='var(--border)';">
-      <div class="card-img-wrap" style="width:145px;min-height:145px;flex-shrink:0;position:relative;overflow:hidden;">
-        <img src="${img}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.src='${fallback}'"/>
-        <div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,rgba(255,255,255,.1));pointer-events:none;"></div>
-        <span style="position:absolute;top:8px;left:8px;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:9999px;color:#fff;backdrop-filter:blur(6px);background:${badgeBg};">${p.category}</span>
+    <div class="p-card" onclick="openProductModal(${p.id})">
+      <div style="flex:1;min-width:0;padding-right:14px;">
+        <h3 style="font-size:.9375rem;font-weight:600;color:#3E3E3E;line-height:1.35;margin-bottom:4px;">${esc(p.name)}</h3>
+        ${desc ? `<p style="font-size:.8125rem;color:#717171;line-height:1.45;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${desc}</p>` : ''}
+        <p style="font-size:.9375rem;font-weight:700;color:var(--red);margin:0;">${sizeNote}${fmt(p.price)}</p>
       </div>
-      <div style="padding:.875rem;display:flex;flex-direction:column;justify-content:space-between;flex:1;min-width:0;">
-        <div>
-          <h3 style="font-weight:700;font-size:.9375rem;color:var(--text);line-height:1.3;margin-bottom:4px;">${esc(p.name)}</h3>
-          <p style="font-size:.75rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(p.description)}</p>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;">
-          <div>${sizeNote}<div style="font-weight:800;font-size:1.1rem;color:var(--red);line-height:1;">${price}</div></div>
-          <button onclick="event.stopPropagation();openProductModal(${p.id})" style="background:var(--red);color:#fff;font-size:.75rem;font-weight:700;padding:.45rem 1rem;border-radius:9999px;border:none;cursor:pointer;transition:background .15s,transform .12s;white-space:nowrap;" onmouseover="this.style.background='var(--red-dk)'" onmouseout="this.style.background='var(--red)'" onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform='scale(1)'">Ver opções</button>
-        </div>
+      <div style="flex-shrink:0;position:relative;">
+        <img src="${img}" alt="${esc(p.name)}"
+          style="width:96px;height:96px;object-fit:cover;border-radius:10px;display:block;"
+          onerror="this.src='${fallback}'"/>
+        <button onclick="event.stopPropagation();openProductModal(${p.id})"
+          style="position:absolute;bottom:-8px;right:-8px;width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;border:2.5px solid #F7F8FA;cursor:pointer;font-size:1.25rem;font-weight:300;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(196,18,48,.4);transition:transform .12s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">+</button>
       </div>
-    </article>`;
+    </div>`;
 }
 
 function filterCat(cat){
   activeCat = cat;
-  document.querySelectorAll('.tab').forEach(b=>{ b.classList.remove('on'); });
+  document.querySelectorAll('.cat-tab').forEach(b=>{ b.classList.remove('on'); });
   document.getElementById(`tab-${cat}`).classList.add('on');
   renderMenu();
 }
