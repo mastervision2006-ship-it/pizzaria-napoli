@@ -257,6 +257,22 @@
     </div>
   </section>
 
+  <!-- Cart quick bar (shown when cart has items) -->
+  <div id="cart-quick-bar" style="display:none;max-width:580px;margin:0 auto;padding:.5rem 1rem 0;">
+    <div style="background:#fff;border:1.5px solid var(--border);border-radius:1.1rem;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;box-shadow:0 3px 12px rgba(196,18,48,.08);">
+      <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+        <span style="font-size:1.1rem;">🛒</span>
+        <div style="min-width:0;">
+          <span id="cqb-count" style="font-size:.72rem;color:var(--muted);display:block;"></span>
+          <span id="cqb-total" style="font-size:1rem;font-weight:800;color:var(--red);"></span>
+        </div>
+      </div>
+      <button onclick="openCheckout()" class="btn-red" style="padding:.6rem 1.125rem;font-size:.8125rem;border-radius:.875rem;white-space:nowrap;flex-shrink:0;">
+        Finalizar Pedido →
+      </button>
+    </div>
+  </div>
+
   <!-- Products -->
   <main style="max-width:580px;margin:0 auto;padding:1.75rem 1rem 8rem;">
     <div id="products-container"></div>
@@ -556,7 +572,7 @@
 
       <p style="font-size:.7rem;color:var(--muted);line-height:1.5;margin-bottom:1.25rem;">Após o pagamento, você receberá a confirmação via WhatsApp em instantes 🚀</p>
 
-      <button onclick="confirmPix()" class="btn-red" style="width:100%;padding:.9rem;font-size:.875rem;">
+      <button id="pix-confirm-btn" onclick="confirmPix()" class="btn-red" style="width:100%;padding:.9rem;font-size:.875rem;">
         Já realizei o pagamento ✓
       </button>
     </div>
@@ -570,9 +586,9 @@
 <div id="success-modal" style="display:none;position:fixed;inset:0;z-index:85;align-items:center;justify-content:center;padding:1rem;">
   <div style="position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);animation:fadeIn .25s;"></div>
   <div style="position:relative;background:#fff;border-radius:1.5rem;width:100%;max-width:340px;padding:2rem 1.5rem;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:slideUp .35s cubic-bezier(.16,1,.3,1);text-align:center;">
-    <div style="font-size:4rem;margin-bottom:1rem;">🎉</div>
-    <h2 class="font-display" style="font-size:1.75rem;font-weight:700;color:var(--text);margin-bottom:.5rem;">Pedido Recebido!</h2>
-    <p style="font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;">Seu pedido foi confirmado e já está sendo preparado. Entrega em até 30 minutos! 🍕🛵</p>
+    <div id="success-icon" style="font-size:4rem;margin-bottom:1rem;">🎉</div>
+    <h2 id="success-title" class="font-display" style="font-size:1.75rem;font-weight:700;color:var(--text);margin-bottom:.5rem;">Pedido Recebido!</h2>
+    <p id="success-msg" style="font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;">Seu pedido foi confirmado e já está sendo preparado. Entrega em até 30 minutos! 🍕🛵</p>
     <button onclick="closeSuccess()" class="btn-red" style="width:100%;padding:.9rem;font-size:.875rem;">
       Ótimo, obrigado! 🙌
     </button>
@@ -1080,7 +1096,19 @@ function addToCartFromModal(){
 let cart = [];
 
 function loadCart(){ try{ cart=JSON.parse(localStorage.getItem(CART_STORE)||'[]'); }catch(_){ cart=[]; } }
-function persistCart(){ localStorage.setItem(CART_STORE,JSON.stringify(cart)); updateCartBadge(); }
+function persistCart(){ localStorage.setItem(CART_STORE,JSON.stringify(cart)); updateCartBadge(); updateCartQuickBar(); }
+
+function updateCartQuickBar(){
+  const bar = document.getElementById('cart-quick-bar');
+  if(!bar) return;
+  const count = cart.reduce((s,c)=>s+c.qty,0);
+  const total = cart.reduce((s,c)=>s+c.unitPrice*c.qty,0);
+  bar.style.display = count > 0 ? 'block' : 'none';
+  if(count > 0){
+    document.getElementById('cqb-count').textContent = `${count} ${count===1?'item':'itens'} no carrinho`;
+    document.getElementById('cqb-total').textContent = fmt(total);
+  }
+}
 
 function updateCartBadge(){
   const count = cart.reduce((s,c)=>s+c.qty,0);
@@ -1184,6 +1212,7 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 // PIX
 // ─────────────────────────────────────────────
 let pixCodeGlobal = '';
+let pixTxId       = null;
 
 async function openPixModal(amount, orderId){
   // Show modal in loading state immediately
@@ -1215,6 +1244,7 @@ async function openPixModal(amount, orderId){
 
     const tx = data.transaction;
     pixCodeGlobal = tx.pix_copia_cola;
+    pixTxId = tx.id || tx.txid || tx.external_id || null;
 
     document.getElementById('pix-qr').src = tx.qr_code_base64;
     document.getElementById('pix-code-display').textContent = pixCodeGlobal;
@@ -1243,17 +1273,55 @@ function copyPix(){
   });
 }
 
-function confirmPix(){
+async function confirmPix(){
+  const btn = document.getElementById('pix-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Verificando pagamento...';
+
+  let confirmed = false;
+
+  if(pixTxId){
+    for(let attempt = 0; attempt < 5; attempt++){
+      try{
+        const r = await fetch(`/api/pix-status?id=${encodeURIComponent(pixTxId)}`);
+        if(r.ok){
+          const d = await r.json();
+          const status = d.status || d.transaction?.status || '';
+          if(status === 'paid' || status === 'completed' || d.paid === true){
+            confirmed = true;
+            break;
+          }
+        }
+      }catch(_){}
+      if(attempt < 4) await new Promise(res=>setTimeout(res,3000));
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Já realizei o pagamento ✓';
   document.getElementById('pix-modal').style.display = 'none';
   cart=[]; persistCart();
-  showSuccessModal();
+  showSuccessModal(confirmed);
 }
 
-function showSuccessModal(){
+function showSuccessModal(paymentConfirmed){
+  const icon  = document.getElementById('success-icon');
+  const title = document.getElementById('success-title');
+  const msg   = document.getElementById('success-msg');
+  if(paymentConfirmed){
+    icon.textContent  = '✅';
+    title.textContent = 'Pagamento Confirmado!';
+    msg.textContent   = 'Seu pagamento PIX foi recebido e seu pedido já está sendo preparado. Entrega em até 30 minutos! 🍕🛵';
+  } else {
+    icon.textContent  = '📋';
+    title.textContent = 'Pedido Recebido!';
+    msg.textContent   = 'Recebemos seu pedido! Assim que confirmarmos seu pagamento PIX você receberá uma mensagem via WhatsApp com a previsão de entrega. 🛵';
+  }
   const el = document.getElementById('success-modal');
   el.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
+
 function closeSuccess(){
   document.getElementById('success-modal').style.display = 'none';
   document.body.style.overflow = '';
@@ -1458,6 +1526,7 @@ function showToast(msg,type='success'){
 (function init(){
   loadCart();
   updateCartBadge();
+  updateCartQuickBar();
   renderMenu();
   initGeo();
 })();
