@@ -252,11 +252,11 @@
         <h1 class="font-display" style="font-size:1.35rem;font-weight:700;color:#3E3E3E;line-height:1.2;margin-bottom:3px;">Pizzaria Napoli</h1>
         <p style="font-size:.8rem;color:#717171;margin-bottom:8px;">⭐ 4.9 · <span onclick="openReviewsModal()" style="text-decoration:underline;cursor:pointer;color:var(--red);font-weight:600;">103 avaliações</span> · Italiana</p>
         <div style="display:flex;flex-wrap:wrap;gap:10px;">
-          <span class="info-pill">🛵 Até 30 min</span>
-          <span style="color:#DCDCDC;">|</span>
-          <span class="info-pill" id="geo-txt">📍 Verificando local...</span>
+          <span class="info-pill">Até 30 min</span>
           <span style="color:#DCDCDC;">|</span>
           <span class="info-pill">💚 Frete grátis</span>
+          <span style="color:#DCDCDC;">|</span>
+          <span class="info-pill" id="geo-txt">📍 Verificando local...</span>
         </div>
       </div>
     </div>
@@ -837,16 +837,26 @@ function renderMenu(){
   box.innerHTML = html;
 }
 
+const PRODUCT_DISCOUNTS = {
+  1:20, 2:18, 3:22, 4:17, 5:25, 6:23, 7:19, 8:15,
+  9:20, 10:25, 11:30, 12:28, 13:27
+};
+
 function renderCard(p){
   const fallback = `https://placehold.co/88x88/FEE2E2/C41230?text=${encodeURIComponent(p.name.charAt(0))}`;
   const img      = p.image || fallback;
   const sizeNote = p.category==='Pizza' ? '<span style="font-size:.72rem;color:#717171;font-weight:400;">a partir de </span>' : '';
   const desc     = p.description ? esc(p.description) : '';
+  const disc     = PRODUCT_DISCOUNTS[p.id];
+  const origHtml = disc
+    ? `<p style="font-size:.75rem;color:#aaa;margin:0 0 2px;line-height:1.3;"><s>${fmt(Math.ceil(p.price/(1-disc/100)*10)/10)}</s><span style="background:#E8F5E9;color:#2E7D32;font-weight:700;font-size:.68rem;padding:1px 5px;border-radius:4px;margin-left:5px;">-${disc}%</span></p>`
+    : '';
   return `
     <div class="p-card" onclick="openProductModal(${p.id})">
       <div style="flex:1;min-width:0;padding-right:14px;">
         <h3 style="font-size:.9375rem;font-weight:600;color:#3E3E3E;line-height:1.35;margin-bottom:4px;">${esc(p.name)}</h3>
         ${desc ? `<p style="font-size:.8125rem;color:#717171;line-height:1.45;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${desc}</p>` : ''}
+        ${origHtml}
         <p style="font-size:.9375rem;font-weight:700;color:var(--red);margin:0;">${sizeNote}${fmt(p.price)}</p>
       </div>
       <div style="flex-shrink:0;position:relative;">
