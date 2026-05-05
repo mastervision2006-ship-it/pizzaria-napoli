@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin — Pizzaria Napoli</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --red:#C41230; --red-dk:#8B0D21; --red-lt:#FEE2E2;
+      --gold:#C8872A; --cream:#FFF8F0; --text:#1C0A0A;
+      --muted:#856060; --border:#EEE0D8; --green:#1DAA54;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'DM Sans',sans-serif;background:#F7F1EE;color:#1C0A0A;min-height:100vh;}
+    .font-display{font-family:'Cormorant Garamond',serif;}
+
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+    @keyframes toastIn{from{opacity:0;transform:translateY(-10px) scale(.95);}to{opacity:1;transform:none;}}
+    @keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateY(-8px) scale(.95);}}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    .toast{animation:toastIn .28s cubic-bezier(.16,1,.3,1) forwards;}
+    .toast.out{animation:toastOut .25s ease forwards;}
+
+    .inp{
+      width:100%;border:1.5px solid var(--border);border-radius:.75rem;
+      padding:.7rem 1rem;font-size:.875rem;font-family:'DM Sans',sans-serif;
+      background:#FFFAF7;color:var(--text);outline:none;
+      transition:border-color .15s,box-shadow .15s;
+    }
+    .inp:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(196,18,48,.1);}
+    .btn-red{
+      background:var(--red);color:#fff;font-weight:700;border:none;
+      cursor:pointer;border-radius:1rem;transition:background .15s,transform .12s;
+    }
+    .btn-red:hover{background:var(--red-dk);}
+    .btn-red:active{transform:scale(.96);}
+    .btn-ghost{
+      background:#F0E8E0;color:var(--muted);font-weight:600;border:none;
+      cursor:pointer;border-radius:1rem;transition:background .15s;
+    }
+    .btn-ghost:hover{background:#E8DDD4;}
+
+    /* ── Login page ── */
+    #login-view{
+      min-height:100vh;display:flex;align-items:center;justify-content:center;
+      padding:1.5rem;animation:fadeIn .3s ease;
+    }
+    .login-card{
+      background:#fff;border-radius:1.75rem;width:100%;max-width:380px;
+      box-shadow:0 8px 40px rgba(28,10,10,.12);overflow:hidden;
+      animation:slideUp .4s cubic-bezier(.16,1,.3,1);
+    }
+    .login-header{
+      background:var(--red);padding:2rem 1.75rem 1.5rem;text-align:center;
+    }
+    .login-body{padding:1.75rem;}
+    .login-error{
+      background:#FEE2E2;color:var(--red);font-size:.8rem;font-weight:600;
+      border-radius:.625rem;padding:.6rem 1rem;margin-bottom:1rem;display:none;
+    }
+
+    /* ── Admin panel ── */
+    #admin-panel{min-height:100vh;animation:fadeIn .3s ease;}
+    #toasts{position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+  </style>
+</head>
+<body>
+
+<!-- ═══ LOGIN VIEW ═══ -->
+<div id="login-view">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="font-display" style="font-size:1.75rem;font-weight:900;color:#fff;letter-spacing:.01em;">🍕 Napoli</div>
+      <p style="font-size:.8rem;color:rgba(255,255,255,.75);margin-top:4px;">Painel Administrativo</p>
+    </div>
+    <div class="login-body">
+      <div id="login-error" class="login-error">Usuário ou senha incorretos.</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Usuário</label>
+          <input id="login-user" class="inp" type="text" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Senha</label>
+          <input id="login-pass" class="inp" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+        </div>
+        <button onclick="doLogin()" class="btn-red" style="width:100%;padding:.875rem;font-size:.9375rem;margin-top:4px;">
+          Entrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN PANEL ═══ -->
+<div id="admin-panel" style="display:none;">
+
+  <!-- Sticky header -->
+  <div style="position:sticky;top:0;z-index:40;background:#fff;border-bottom:1.5px solid var(--border);box-shadow:0 1px 8px rgba(28,10,10,.06);">
+    <div style="max-width:680px;margin:0 auto;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="/" style="text-decoration:none;">
+          <button class="btn-red" style="padding:.4rem .875rem;font-size:.8125rem;border-radius:9999px;display:flex;align-items:center;gap:5px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 19l-7-7 7-7"/></svg> Cardápio
+          </button>
+        </a>
+        <div>
+          <h2 class="font-display" style="font-size:1.4rem;font-weight:700;line-height:1.1;">Painel Admin</h2>
+          <p style="font-size:.7rem;color:var(--muted);">Gerencie o cardápio</p>
+        </div>
+      </div>
+      <button onclick="doLogout()" style="padding:.4rem .875rem;font-size:.8125rem;border-radius:9999px;border:1.5px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;transition:all .15s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sair
+      </button>
+    </div>
+  </div>
+
+  <main style="max-width:680px;margin:0 auto;padding:1.5rem 1rem 5rem;">
+
+    <button onclick="openAdminForm(null)" class="btn-red" style="width:100%;padding:.875rem;font-size:.875rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(196,18,48,.28);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16m8-8H4"/></svg>
+      Adicionar Produto
+    </button>
+
+    <!-- Form -->
+    <div id="admin-form-wrap" style="display:none;background:#fff;border-radius:1.25rem;overflow:hidden;border:1.5px solid var(--border);margin-bottom:1.25rem;box-shadow:0 4px 24px rgba(28,10,10,.07);">
+      <div style="background:var(--red);padding:1rem 1.25rem;">
+        <h3 id="admin-form-title" style="font-weight:700;color:#fff;font-size:1rem;">Novo Produto</h3>
+      </div>
+      <form id="admin-form" style="padding:1.25rem;display:flex;flex-direction:column;gap:14px;">
+        <input type="hidden" id="af-id"/>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Nome *</label>
+          <input id="af-name" class="inp" type="text" placeholder="Ex: Pizza Margherita"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Descrição *</label>
+          <textarea id="af-desc" class="inp" rows="2" placeholder="Ingredientes..." style="resize:none;"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Preço (R$) *</label>
+            <input id="af-price" class="inp" type="number" step="0.01" min="0.01" placeholder="49.90"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Categoria *</label>
+            <select id="af-cat" class="inp" style="appearance:none;">
+              <option value="">Selecione...</option>
+              <option value="Pizza">🍕 Pizza</option>
+              <option value="Combo">🎁 Combo</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">URL da Imagem</label>
+          <input id="af-img" class="inp" type="url" placeholder="https://..."/>
+        </div>
+        <div style="display:flex;gap:10px;padding-top:4px;">
+          <button type="submit" class="btn-red" style="flex:1;padding:.8rem;font-size:.875rem;">Salvar</button>
+          <button type="button" onclick="closeAdminForm()" class="btn-ghost" style="padding:.8rem 1.25rem;font-size:.875rem;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="admin-list"></div>
+  </main>
+</div>
+
+<!-- Toast container -->
+<div id="toasts" style="position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:320px;"></div>
+
+<script>
+// ─── Auth ───
+const AUTH_KEY = 'napoli_admin_auth';
+
+function checkAuth(){
+  if(sessionStorage.getItem(AUTH_KEY)==='ok'){
+    showPanel();
+  }
+}
+
+function doLogin(){
+  const user = (document.getElementById('login-user').value||'').trim();
+  const pass = (document.getElementById('login-pass').value||'').trim();
+  const err  = document.getElementById('login-error');
+  if(user==='admin' && pass==='admin123'){
+    err.style.display='none';
+    sessionStorage.setItem(AUTH_KEY,'ok');
+    showPanel();
+  } else {
+    err.style.display='block';
+    document.getElementById('login-pass').value='';
+    document.getElementById('login-pass').focus();
+  }
+}
+
+function doLogout(){
+  sessionStorage.removeItem(AUTH_KEY);
+  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('login-view').style.display='flex';
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+}
+
+function showPanel(){
+  document.getElementById('login-view').style.display='none';
+  document.getElementById('admin-panel').style.display='block';
+  renderAdminList();
+}
+
+// ─── Shared utils ───
+const STORE = 'napoli_v3';
+function getProducts(){
+  try{ const r=localStorage.getItem(STORE); if(r) return JSON.parse(r); }catch(_){}
+  return [];
+}
+function saveProducts(l){ localStorage.setItem(STORE,JSON.stringify(l)); }
+function nextId(){ const l=getProducts(); return l.length?Math.max(...l.map(p=>p.id))+1:1; }
+function fmt(n){ return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(n); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg, type='success'){
+  const box = document.getElementById('toasts');
+  const el  = document.createElement('div');
+  el.className = 'toast';
+  el.style.cssText=`background:${type==='success'?'#1C0A0A':'#C41230'};color:#fff;padding:.7rem 1rem;border-radius:.875rem;font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.22);pointer-events:auto;`;
+  el.innerHTML=`<span style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;">${type==='success'?'✓':'!'}</span><span>${esc(msg)}</span>`;
+  box.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),280); },2800);
+}
+
+// ─── Admin CRUD ───
+function renderAdminList(){
+  const list  = document.getElementById('admin-list');
+  const prods = getProducts();
+  if(!prods.length){
+    list.innerHTML=`<div style="text-align:center;padding:3rem 1rem;background:#fff;border-radius:1.1rem;border:2px dashed var(--border);"><span style="font-size:3rem;display:block;margin-bottom:.75rem;">🍕</span><p style="font-weight:600;color:var(--muted);">Nenhum produto cadastrado</p><p style="font-size:.8rem;color:var(--muted);margin-top:.5rem;">Produtos do cardápio principal aparecem aqui após o primeiro acesso do cliente.</p></div>`;
+    return;
+  }
+  list.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px;">${prods.map(p=>{
+    const fallback=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(p.name.charAt(0))}`;
+    const bg=p.category==='Pizza'?'background:#FEE2E2;color:var(--red);':'background:#FEF3C7;color:#92400E;';
+    return `<div style="background:#fff;border-radius:1rem;padding:1rem;display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);box-shadow:0 1px 8px rgba(28,10,10,.04);">
+      <div style="width:52px;height:52px;border-radius:.75rem;overflow:hidden;flex-shrink:0;background:var(--red-lt);">
+        <img src="${p.image||fallback}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='${fallback}'"/>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <span style="font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:9999px;${bg}">${p.category}</span>
+        <p style="font-weight:600;font-size:.875rem;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(p.name)}</p>
+        <p style="font-weight:700;font-size:.85rem;color:var(--red);">${fmt(p.price)}</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button onclick="openAdminForm(${p.id})" style="width:36px;height:36px;border-radius:.625rem;border:none;cursor:pointer;background:#EFF6FF;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'">✏️</button>
+        <button onclick="deleteProduct(${p.id})" style="width:36px;height:36px;border-radius:.625rem;border:none;cursor:pointer;background:var(--red-lt);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='#FECACA'" onmouseout="this.style.background='var(--red-lt)'">🗑️</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function openAdminForm(id){
+  const wrap  = document.getElementById('admin-form-wrap');
+  const title = document.getElementById('admin-form-title');
+  wrap.style.display='block';
+  document.getElementById('admin-form').reset();
+  if(id){
+    const p=getProducts().find(x=>x.id===id);
+    if(!p) return;
+    title.textContent='Editar Produto';
+    document.getElementById('af-id').value=p.id;
+    document.getElementById('af-name').value=p.name;
+    document.getElementById('af-desc').value=p.description;
+    document.getElementById('af-price').value=p.price;
+    document.getElementById('af-cat').value=p.category;
+    document.getElementById('af-img').value=p.image||'';
+  } else {
+    title.textContent='Novo Produto';
+    document.getElementById('af-id').value='';
+  }
+  wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeAdminForm(){
+  document.getElementById('admin-form-wrap').style.display='none';
+  document.getElementById('admin-form').reset();
+}
+
+function deleteProduct(id){
+  if(!confirm('Excluir este produto?')) return;
+  saveProducts(getProducts().filter(p=>p.id!==id));
+  renderAdminList();
+  showToast('Produto excluído','error');
+}
+
+document.getElementById('admin-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  const name  = document.getElementById('af-name').value.trim();
+  const desc  = document.getElementById('af-desc').value.trim();
+  const price = parseFloat(document.getElementById('af-price').value);
+  const cat   = document.getElementById('af-cat').value;
+  const img   = document.getElementById('af-img').value.trim();
+  const editId= document.getElementById('af-id').value;
+  if(!name||!desc||!cat){ showToast('Preencha os campos obrigatórios','error'); return; }
+  if(!price||price<=0)  { showToast('Preço inválido','error'); return; }
+  let prods = getProducts();
+  if(editId){
+    prods = prods.map(p=>p.id===parseInt(editId)?{...p,name,description:desc,price,category:cat,image:img}:p);
+    showToast('Produto atualizado!','success');
+  } else {
+    prods.push({id:nextId(),name,description:desc,price,category:cat,image:img});
+    showToast('Produto adicionado!','success');
+  }
+  saveProducts(prods);
+  closeAdminForm();
+  renderAdminList();
+});
+
+// ─── Init ───
+checkAuth();
+</script>
+</body>
+</html>

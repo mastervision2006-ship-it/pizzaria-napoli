@@ -239,12 +239,6 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
       <span id="cart-badge" style="position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;background:var(--red);border-radius:9999px;border:2px solid #fff;font-size:.6rem;font-weight:800;color:#fff;display:none;align-items:center;justify-content:center;padding:0 4px;">0</span>
     </button>
-    <!-- Hidden admin gear -->
-    <button onclick="switchView('admin')" title="Admin" tabindex="-1"
-      style="position:absolute;top:12px;left:14px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.75);backdrop-filter:blur(6px);cursor:pointer;opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center;"
-      onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#717171" stroke-width="1.8" stroke-linecap="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-    </button>
   </div>
 
   <!-- ── RESTAURANT INFO ── -->
@@ -308,74 +302,9 @@
 
   <footer style="background:#fff;border-top:1px solid #EFEFEF;padding:1.5rem 1rem;text-align:center;max-width:580px;margin:0 auto;">
     <p style="font-size:.8125rem;font-weight:500;color:#717171;">© 2026 Pizzaria Napoli · Feito com ❤️</p>
-    <button onclick="switchView('admin')" style="margin-top:.5rem;font-size:.7rem;color:#D0D0D0;background:none;border:none;cursor:pointer;">⚙ Admin</button>
   </footer>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     ADMIN VIEW
-═══════════════════════════════════════════ -->
-<div id="admin-view" style="display:none;min-height:100vh;background:#F7F1EE;">
-  <div style="position:sticky;top:0;z-index:40;background:#fff;border-bottom:1.5px solid var(--border);box-shadow:0 1px 8px rgba(28,10,10,.06);">
-    <div style="max-width:680px;margin:0 auto;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;">
-      <button onclick="switchView('menu')" class="btn-red" style="padding:.4rem .875rem;font-size:.8125rem;border-radius:9999px;display:flex;align-items:center;gap:5px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 19l-7-7 7-7"/></svg> Menu
-      </button>
-      <div>
-        <h2 class="font-display" style="font-size:1.4rem;font-weight:700;line-height:1.1;">Painel Admin</h2>
-        <p style="font-size:.7rem;color:var(--muted);">Gerencie o cardápio</p>
-      </div>
-    </div>
-  </div>
-  <main style="max-width:680px;margin:0 auto;padding:1.5rem 1rem 5rem;">
-    <button onclick="openAdminForm(null)" class="btn-red" style="width:100%;padding:.875rem;font-size:.875rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(196,18,48,.28);">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16m8-8H4"/></svg>
-      Adicionar Produto
-    </button>
-
-    <!-- Admin Form -->
-    <div id="admin-form-wrap" style="display:none;background:#fff;border-radius:1.25rem;overflow:hidden;border:1.5px solid var(--border);margin-bottom:1.25rem;box-shadow:0 4px 24px rgba(28,10,10,.07);">
-      <div style="background:var(--red);padding:1rem 1.25rem;">
-        <h3 id="admin-form-title" style="font-weight:700;color:#fff;font-size:1rem;">Novo Produto</h3>
-      </div>
-      <form id="admin-form" style="padding:1.25rem;display:flex;flex-direction:column;gap:14px;">
-        <input type="hidden" id="af-id"/>
-        <div>
-          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Nome *</label>
-          <input id="af-name" class="inp" type="text" placeholder="Ex: Pizza Margherita"/>
-        </div>
-        <div>
-          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Descrição *</label>
-          <textarea id="af-desc" class="inp" rows="2" placeholder="Ingredientes..." style="resize:none;"></textarea>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div>
-            <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Preço (R$) *</label>
-            <input id="af-price" class="inp" type="number" step="0.01" min="0.01" placeholder="49.90"/>
-          </div>
-          <div>
-            <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Categoria *</label>
-            <select id="af-cat" class="inp" style="appearance:none;">
-              <option value="">Selecione...</option>
-              <option value="Pizza">🍕 Pizza</option>
-              <option value="Combo">🎁 Combo</option>
-            </select>
-          </div>
-        </div>
-        <div>
-          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">URL da Imagem</label>
-          <input id="af-img" class="inp" type="url" placeholder="https://..."/>
-        </div>
-        <div style="display:flex;gap:10px;padding-top:4px;">
-          <button type="submit" class="btn-red" style="flex:1;padding:.8rem;font-size:.875rem;">Salvar</button>
-          <button type="button" onclick="closeAdminForm()" class="btn-ghost" style="padding:.8rem 1.25rem;font-size:.875rem;">Cancelar</button>
-        </div>
-      </form>
-    </div>
-
-    <div id="admin-list"></div>
-  </main>
-</div>
 
 
 <!-- ═══════════════════════════════════════════
@@ -1463,103 +1392,6 @@ function closeSuccess(){
   document.body.style.overflow = '';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-
-// ─────────────────────────────────────────────
-// VIEW SWITCH
-// ─────────────────────────────────────────────
-function switchView(v){
-  document.getElementById('menu-view').style.display  = v==='menu'  ? 'block' : 'none';
-  document.getElementById('admin-view').style.display = v==='admin' ? 'block' : 'none';
-  if(v==='admin') renderAdminList();
-  else renderMenu();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-// ─────────────────────────────────────────────
-// ADMIN CRUD
-// ─────────────────────────────────────────────
-function renderAdminList(){
-  const list = document.getElementById('admin-list');
-  const prods = getProducts();
-  if(!prods.length){
-    list.innerHTML=`<div style="text-align:center;padding:3rem 1rem;background:#fff;border-radius:1.1rem;border:2px dashed var(--border);"><span style="font-size:3rem;display:block;margin-bottom:.75rem;">🍕</span><p style="font-weight:600;color:var(--muted);">Nenhum produto cadastrado</p></div>`;
-    return;
-  }
-  list.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">${prods.map(p=>{
-    const price=fmt(p.price);
-    const fallback=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(p.name.charAt(0))}`;
-    const bg=p.category==='Pizza'?'background:#FEE2E2;color:var(--red);':'background:#FEF3C7;color:#92400E;';
-    return `<div style="background:#fff;border-radius:1rem;padding:1rem;display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);box-shadow:0 1px 8px rgba(28,10,10,.04);">
-      <div style="width:52px;height:52px;border-radius:.75rem;overflow:hidden;flex-shrink:0;background:var(--red-lt);">
-        <img src="${p.image||fallback}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='${fallback}'"/>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <span style="font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:9999px;${bg}">${p.category}</span>
-        <p style="font-weight:600;font-size:.875rem;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(p.name)}</p>
-        <p style="font-weight:700;font-size:.85rem;color:var(--red);">${price}</p>
-      </div>
-      <div style="display:flex;gap:8px;flex-shrink:0;">
-        <button onclick="openAdminForm(${p.id})" style="width:36px;height:36px;border-radius:.625rem;border:none;cursor:pointer;background:#EFF6FF;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'">✏️</button>
-        <button onclick="deleteProduct(${p.id})" style="width:36px;height:36px;border-radius:.625rem;border:none;cursor:pointer;background:var(--red-lt);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='#FECACA'" onmouseout="this.style.background='var(--red-lt)'">🗑️</button>
-      </div>
-    </div>`;
-  }).join('')}</div>`;
-}
-
-function openAdminForm(id){
-  const wrap  = document.getElementById('admin-form-wrap');
-  const title = document.getElementById('admin-form-title');
-  wrap.style.display='block';
-  document.getElementById('admin-form').reset();
-  if(id){
-    const p=getProducts().find(x=>x.id===id);
-    if(!p) return;
-    title.textContent='Editar Produto';
-    document.getElementById('af-id').value=p.id;
-    document.getElementById('af-name').value=p.name;
-    document.getElementById('af-desc').value=p.description;
-    document.getElementById('af-price').value=p.price;
-    document.getElementById('af-cat').value=p.category;
-    document.getElementById('af-img').value=p.image||'';
-  } else {
-    title.textContent='Novo Produto';
-    document.getElementById('af-id').value='';
-  }
-  wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-function closeAdminForm(){
-  document.getElementById('admin-form-wrap').style.display='none';
-  document.getElementById('admin-form').reset();
-}
-function deleteProduct(id){
-  if(!confirm('Excluir este produto?')) return;
-  saveProducts(getProducts().filter(p=>p.id!==id));
-  renderAdminList();
-  showToast('Produto excluído','error');
-}
-
-document.getElementById('admin-form').addEventListener('submit',function(e){
-  e.preventDefault();
-  const name=document.getElementById('af-name').value.trim();
-  const desc=document.getElementById('af-desc').value.trim();
-  const price=parseFloat(document.getElementById('af-price').value);
-  const cat=document.getElementById('af-cat').value;
-  const img=document.getElementById('af-img').value.trim();
-  const editId=document.getElementById('af-id').value;
-  if(!name||!desc||!cat){ showToast('Preencha os campos obrigatórios','error'); return; }
-  if(!price||price<=0){ showToast('Preço inválido','error'); return; }
-  let prods=getProducts();
-  if(editId){
-    prods=prods.map(p=>p.id===parseInt(editId)?{...p,name,description:desc,price,category:cat,image:img}:p);
-    showToast('Produto atualizado!','success');
-  } else {
-    prods.push({id:nextId(),name,description:desc,price,category:cat,image:img});
-    showToast('Produto adicionado!','success');
-  }
-  saveProducts(prods);
-  closeAdminForm();
-  renderAdminList();
-});
 
 // ─────────────────────────────────────────────
 // CHAT
