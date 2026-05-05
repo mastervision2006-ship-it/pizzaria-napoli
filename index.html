@@ -435,15 +435,28 @@
         </div>
 
         <!-- COMBO SELECTIONS (Combo Napoli Perfeito) -->
-        <div id="pm-combo-section" style="display:none;margin-bottom:1.25rem;">
-          <div style="margin-bottom:1rem;">
-            <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.625rem;">🍕 Pizza Salgada <span style="color:var(--red);">*</span></p>
-            <div id="combo-salgada-list" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;"></div>
-            <div id="combo-salgada-name" style="font-size:.75rem;font-weight:600;color:var(--red);margin-top:6px;min-height:18px;"></div>
+        <div id="pm-combo-section" style="display:none;margin:0 -1.25rem 1rem;">
+          <!-- Sabor pizza salgada -->
+          <div style="border-top:8px solid #F7F8FA;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem .5rem;">
+              <div>
+                <p style="font-size:.875rem;font-weight:700;color:#3E3E3E;">🍕 Sabor da Pizza</p>
+                <p style="font-size:.75rem;color:#717171;margin-top:2px;">Escolha 1 opção</p>
+              </div>
+              <span id="combo-salgada-badge" style="font-size:.65rem;font-weight:700;padding:.22rem .6rem;border-radius:9999px;background:var(--red);color:#fff;transition:background .2s;">Obrigatório</span>
+            </div>
+            <div id="combo-salgada-list" style="border-top:1px solid #F0F0F0;"></div>
           </div>
-          <div>
-            <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.625rem;">🍫 Brotinho Doce <span style="color:var(--red);">*</span></p>
-            <div id="combo-doce-list" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+          <!-- Sabor brotinho doce -->
+          <div style="border-top:8px solid #F7F8FA;margin-top:.5rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem .5rem;">
+              <div>
+                <p style="font-size:.875rem;font-weight:700;color:#3E3E3E;">🍫 Sabor do Brotinho</p>
+                <p style="font-size:.75rem;color:#717171;margin-top:2px;">Escolha 1 opção</p>
+              </div>
+              <span id="combo-doce-badge" style="font-size:.65rem;font-weight:700;padding:.22rem .6rem;border-radius:9999px;background:var(--red);color:#fff;transition:background .2s;">Obrigatório</span>
+            </div>
+            <div id="combo-doce-list" style="border-top:1px solid #F0F0F0;padding:.5rem 1.25rem .75rem;display:flex;flex-wrap:wrap;gap:8px;"></div>
           </div>
         </div>
 
@@ -976,7 +989,13 @@ function openProductModal(id){
     el('fl1-badge').textContent = 'Obrigatório';
     el('fl1-badge').style.background = 'var(--red)';
   }
-  if(isCombo13) buildComboSection();
+  if(isCombo13){
+    buildComboSection();
+    const b1 = document.getElementById('combo-salgada-badge');
+    const b2 = document.getElementById('combo-doce-badge');
+    b1.textContent='Obrigatório'; b1.style.background='var(--red)';
+    b2.textContent='Obrigatório'; b2.style.background='var(--red)';
+  }
 
   updatePmTotal();
   el('product-modal').style.display = 'block';
@@ -1038,32 +1057,36 @@ function selectFlavor(num, id){
 }
 
 function buildComboSection(){
-  const pizzas = getProducts().filter(p=>p.category==='Pizza');
-  document.getElementById('combo-salgada-list').innerHTML = pizzas.map(p=>{
-    const fb=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(p.name.charAt(0))}`;
-    return `<div class="combo-pizza-thumb" id="cst-${p.id}" onclick="selectComboSalgada(${p.id})">
-      <img src="${p.image||fb}" alt="${esc(p.name)}" style="width:100%;height:58px;object-fit:cover;display:block;" onerror="this.src='${fb}'"/>
-      <div style="padding:4px 5px;font-size:.6rem;font-weight:600;color:var(--text);line-height:1.2;">${esc(p.name)}</div>
+  document.getElementById('combo-salgada-list').innerHTML = PIZZA_FLAVORS.map(f=>{
+    const isOn = pm_comboSalgada===f.id;
+    return `<div class="flavor-row${isOn?' fl-on':''}" onclick="selectComboSalgada('${f.id}','${f.name.replace(/'/g,"\\'")}')">
+      <div style="flex:1;min-width:0;">
+        <p style="font-size:.9rem;font-weight:600;color:#3E3E3E;line-height:1.3;">${esc(f.name)}</p>
+        <p style="font-size:.775rem;color:#717171;margin-top:3px;line-height:1.4;">${esc(f.desc)}</p>
+      </div>
+      <div class="fl-radio${isOn?' fl-on':''}"></div>
     </div>`;
   }).join('');
   document.getElementById('combo-doce-list').innerHTML = DOCE_FLAVORS.map(f=>
     `<button class="combo-doce-pill" id="cdf-${f.id}" onclick="selectComboDoce('${f.id}','${f.name.replace(/'/g,'\\\'')}')">${f.emoji} ${esc(f.name)}</button>`
   ).join('');
-  document.getElementById('combo-salgada-name').textContent = '';
 }
 
-function selectComboSalgada(id){
+function selectComboSalgada(id, name){
   pm_comboSalgada = id;
-  document.querySelectorAll('.combo-pizza-thumb').forEach(el=>el.classList.remove('active'));
-  document.getElementById(`cst-${id}`)?.classList.add('active');
-  const p = getProducts().find(x=>x.id===id);
-  document.getElementById('combo-salgada-name').textContent = p ? `Selecionada: ${p.name}` : '';
+  const badge = document.getElementById('combo-salgada-badge');
+  badge.textContent = '✓ ' + name;
+  badge.style.background = '#1DAA54';
+  buildComboSection();
 }
 
 function selectComboDoce(id, name){
   pm_comboDoce = name;
   document.querySelectorAll('.combo-doce-pill').forEach(el=>el.classList.remove('active'));
   document.getElementById(`cdf-${id}`)?.classList.add('active');
+  const badge = document.getElementById('combo-doce-badge');
+  badge.textContent = '✓ ' + name;
+  badge.style.background = '#1DAA54';
 }
 
 function changePmQty(d){
@@ -1102,8 +1125,8 @@ function addToCartFromModal(){
 
   let sizeLabel, halfName, key;
   if(pm_product.id === 13){
-    const salgada = getProducts().find(p=>p.id===pm_comboSalgada);
-    sizeLabel = salgada?.name || null;
+    const salgadaFlavor = PIZZA_FLAVORS.find(f=>f.id===pm_comboSalgada);
+    sizeLabel = salgadaFlavor?.name || null;
     halfName  = pm_comboDoce;
     key = `${pm_product.id}_s${pm_comboSalgada}_d${pm_comboDoce}`;
   } else {
