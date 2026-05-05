@@ -99,43 +99,24 @@
     .tdot:nth-child(2){animation-delay:.18s;}
     .tdot:nth-child(3){animation-delay:.36s;}
 
-    /* ── Promo banner ── */
-    @keyframes urgentPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,60,60,.55);}70%{box-shadow:0 0 0 10px rgba(255,60,60,0);}}
-    @keyframes timerBlink{0%,100%{opacity:1;}50%{opacity:.5;}}
-    @keyframes badgeBounce{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
-    @keyframes promoBannerIn{from{opacity:0;transform:translateY(-14px);}to{opacity:1;transform:translateY(0);}}
-    .promo-banner{
-      animation:promoBannerIn .42s cubic-bezier(.16,1,.3,1) forwards;
-      border-radius:1.25rem;overflow:hidden;
-      background:linear-gradient(135deg,#1A0500 0%,#2E0A00 50%,#1A0500 100%);
-      border:2px solid #C41230;
-      box-shadow:0 6px 32px rgba(196,18,48,.35),0 2px 8px rgba(0,0,0,.4);
-      position:relative;
+    /* ── Promo banner (featured card) ── */
+    @keyframes timerBlink{0%,100%{opacity:1;}50%{opacity:.3;}}
+    .promo-featured{border-left:4px solid #C8872A !important;}
+    .promo-timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--muted);}
+    .promo-timer.urgent{animation:timerBlink .55s ease-in-out infinite;color:var(--red);}
+    /* ── Combo flavor pickers ── */
+    .combo-pizza-thumb{
+      flex-shrink:0;width:74px;border-radius:.625rem;overflow:hidden;cursor:pointer;
+      border:2px solid var(--border);transition:border-color .15s,box-shadow .15s;
+      background:#F7F0EB;text-align:center;
     }
-    .promo-badge{
-      display:inline-flex;align-items:center;gap:6px;
-      background:#C41230;color:#fff;font-size:.65rem;font-weight:800;
-      letter-spacing:.12em;text-transform:uppercase;
-      padding:.3rem .75rem;border-radius:9999px;
-      animation:badgeBounce 1.2s ease-in-out infinite;
+    .combo-pizza-thumb.active{border-color:var(--red);box-shadow:0 0 0 3px rgba(196,18,48,.12);}
+    .combo-doce-pill{
+      border:1.5px solid var(--border);border-radius:9999px;
+      padding:.4rem .8rem;cursor:pointer;font-size:.8rem;font-weight:600;
+      transition:all .15s;background:#fff;color:var(--text);white-space:nowrap;
     }
-    .promo-timer{
-      font-size:2.4rem;font-weight:900;font-variant-numeric:tabular-nums;
-      color:#fff;letter-spacing:.05em;line-height:1;
-      text-shadow:0 0 20px rgba(255,80,80,.7);
-    }
-    .promo-timer.urgent{animation:timerBlink .5s ease-in-out infinite;color:#FF4444;}
-    .promo-cta{
-      background:linear-gradient(135deg,#C41230,#8B0D21);
-      color:#fff;font-weight:800;font-size:.9375rem;
-      border:none;border-radius:.875rem;width:100%;
-      padding:.875rem;cursor:pointer;
-      box-shadow:0 4px 18px rgba(196,18,48,.5);
-      transition:transform .12s,box-shadow .12s;
-      animation:urgentPulse 2s ease-in-out infinite;
-    }
-    .promo-cta:hover{transform:scale(1.02);box-shadow:0 6px 24px rgba(196,18,48,.65);}
-    .promo-cta:active{transform:scale(.97);}
+    .combo-doce-pill.active{background:var(--red);color:#fff;border-color:var(--red);}
 
     /* ── Modals backdrop ── */
     .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);}
@@ -402,6 +383,19 @@
           <div id="half-picker" style="display:none;">
             <div id="half-list" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;"></div>
             <div id="half-selected-name" style="font-size:.75rem;font-weight:600;color:var(--red);margin-top:6px;min-height:18px;"></div>
+          </div>
+        </div>
+
+        <!-- COMBO SELECTIONS (Combo Napoli Perfeito) -->
+        <div id="pm-combo-section" style="display:none;margin-bottom:1.25rem;">
+          <div style="margin-bottom:1rem;">
+            <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.625rem;">🍕 Pizza Salgada <span style="color:var(--red);">*</span></p>
+            <div id="combo-salgada-list" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;"></div>
+            <div id="combo-salgada-name" style="font-size:.75rem;font-weight:600;color:var(--red);margin-top:6px;min-height:18px;"></div>
+          </div>
+          <div>
+            <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.625rem;">🍫 Brotinho Doce <span style="color:var(--red);">*</span></p>
+            <div id="combo-doce-list" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
           </div>
         </div>
 
@@ -781,50 +775,36 @@ function renderMenu(){
   // ── Featured promo banner (Combo Napoli Perfeito) ──
   if(combo && (activeCat==='all' || activeCat==='Combo')){
     html += `
-      <div class="promo-banner" style="margin-bottom:2rem;">
-        <!-- Urgency ribbon -->
-        <div style="background:#C41230;padding:.45rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <span class="promo-badge">⚡ Oferta Relâmpago</span>
-          <span style="font-size:.7rem;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.05em;">Encerra em:</span>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-            <span id="promo-timer" class="promo-timer" style="font-size:1.2rem;">15:00</span>
-          </div>
+      <article class="p-card promo-featured" onclick="openProductModal(13)"
+        style="background:#fff;border-radius:1.1rem;overflow:hidden;display:flex;border:1.5px solid var(--border);cursor:pointer;box-shadow:0 2px 14px rgba(196,18,48,.06);margin-bottom:1.5rem;transition:box-shadow .2s,border-color .2s;"
+        onmouseover="this.style.boxShadow='0 8px 28px rgba(196,18,48,.13)';this.style.borderColor='#F9C0C0';"
+        onmouseout="this.style.boxShadow='0 2px 14px rgba(196,18,48,.06)';this.style.borderColor='var(--border)';">
+        <!-- Image -->
+        <div style="width:120px;flex-shrink:0;position:relative;overflow:hidden;">
+          <img src="${combo.image}" alt="${esc(combo.name)}" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+          <span style="position:absolute;top:8px;left:8px;background:#C8872A;color:#fff;font-size:.58rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:.22rem .5rem;border-radius:9999px;">⭐ Destaque</span>
         </div>
-
-        <!-- Main content -->
-        <div style="display:flex;align-items:stretch;min-height:0;">
-          <!-- Image -->
-          <div style="width:42%;flex-shrink:0;position:relative;overflow:hidden;max-height:200px;">
-            <img src="${combo.image}" alt="${esc(combo.name)}"
-              style="width:100%;height:100%;object-fit:cover;display:block;"/>
-            <div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,rgba(26,5,0,.8));"></div>
+        <!-- Content -->
+        <div style="flex:1;padding:.875rem .875rem .75rem;display:flex;flex-direction:column;justify-content:space-between;min-width:0;">
+          <div>
+            <h3 class="font-display" style="font-size:1.15rem;font-weight:700;line-height:1.2;margin-bottom:.3rem;">${esc(combo.name)}</h3>
+            <p style="font-size:.72rem;color:var(--muted);line-height:1.5;">🍕 Pizza GG &nbsp;·&nbsp; 🥤 Refri 2L &nbsp;·&nbsp; 🍫 Brotinho Doce</p>
           </div>
-
-          <!-- Text -->
-          <div style="flex:1;padding:1rem 1rem 1rem .875rem;display:flex;flex-direction:column;justify-content:space-between;gap:.625rem;">
-            <div>
-              <p style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#C8872A;margin-bottom:.25rem;">Destaque da noite</p>
-              <h3 class="font-display" style="font-size:1.35rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:.5rem;">${esc(combo.name)}</h3>
-              <ul style="list-style:none;display:flex;flex-direction:column;gap:.2rem;">
-                <li style="font-size:.75rem;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:5px;"><span style="color:#FFD700;font-weight:700;">✓</span> 1 Pizza GG à sua escolha</li>
-                <li style="font-size:.75rem;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:5px;"><span style="color:#FFD700;font-weight:700;">✓</span> 1 Refrigerante Coca-Cola 2L</li>
-                <li style="font-size:.75rem;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:5px;"><span style="color:#FFD700;font-weight:700;">✓</span> 1 Brotinho Doce</li>
-              </ul>
-            </div>
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
-              <div>
-                <span style="font-size:.6rem;color:rgba(255,255,255,.55);display:block;margin-bottom:.1rem;">tudo isso por apenas</span>
-                <span style="font-size:1.6rem;font-weight:900;color:#FFD700;line-height:1;">R$ 59<span style="font-size:.9rem;">,90</span></span>
-                <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#1DAA54;color:#fff;padding:.15rem .45rem;border-radius:9999px;">🛵 Frete grátis</span>
+          <div style="margin-top:.625rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.25rem;">
+              <div style="display:flex;align-items:baseline;gap:6px;">
+                <span style="font-size:1.25rem;font-weight:800;color:var(--red);">R$ 59,90</span>
+                <span style="font-size:.65rem;font-weight:700;background:#1DAA54;color:#fff;padding:.15rem .45rem;border-radius:9999px;">🛵 Grátis</span>
               </div>
-              <button class="promo-cta" onclick="openProductModal(13)" style="width:auto;padding:.65rem 1rem;font-size:.8125rem;">
-                Pedir agora →
-              </button>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;margin-top:.45rem;padding-top:.45rem;border-top:1px solid var(--border);">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span style="font-size:.7rem;color:var(--muted);">Oferta encerra em</span>
+              <span id="promo-timer" class="promo-timer" style="font-size:.7rem;color:var(--muted);">15:00</span>
             </div>
           </div>
         </div>
-      </div>`;
+      </article>`;
     startPromoTimer();
   }
 
@@ -885,20 +865,33 @@ function filterCat(cat){
 // ─────────────────────────────────────────────
 // PRODUCT MODAL
 // ─────────────────────────────────────────────
-let pm_product   = null;
-let pm_sizeId    = 'grande';
-let pm_qty       = 1;
-let pm_halfOn    = false;
-let pm_halfProd  = null;
+const DOCE_FLAVORS = [
+  { id:'brigadeiro',    name:'Brigadeiro',          emoji:'🍫' },
+  { id:'nutella',       name:'Nutella c/ Morango',   emoji:'🍓' },
+  { id:'mm',            name:'M&M\'s',               emoji:'🍬' },
+  { id:'prestigio',     name:'Prestígio',             emoji:'🥥' },
+  { id:'banana',        name:'Banana c/ Canela',     emoji:'🍌' },
+  { id:'romeu-julieta', name:'Romeu e Julieta',      emoji:'🧀' },
+];
+
+let pm_product      = null;
+let pm_sizeId       = 'grande';
+let pm_qty          = 1;
+let pm_halfOn       = false;
+let pm_halfProd     = null;
+let pm_comboSalgada = null;
+let pm_comboDoce    = null;
 
 function openProductModal(id){
   const p = getProducts().find(x=>x.id===id);
   if(!p) return;
-  pm_product  = p;
-  pm_sizeId   = 'grande';
-  pm_qty      = 1;
-  pm_halfOn   = false;
-  pm_halfProd = null;
+  pm_product      = p;
+  pm_sizeId       = 'grande';
+  pm_qty          = 1;
+  pm_halfOn       = false;
+  pm_halfProd     = null;
+  pm_comboSalgada = null;
+  pm_comboDoce    = null;
 
   const fallback = `https://placehold.co/600x400/fee2e2/c41230?text=${encodeURIComponent(p.name)}`;
   const el = id => document.getElementById(id);
@@ -909,15 +902,18 @@ function openProductModal(id){
   el('pm-desc').textContent = p.description;
   el('pm-qty').textContent = '1';
 
-  const isPizza = p.category === 'Pizza';
-  el('pm-size-section').style.display = isPizza ? 'block' : 'none';
-  el('pm-half-section').style.display = isPizza ? 'block' : 'none';
+  const isPizza   = p.category === 'Pizza';
+  const isCombo13 = p.id === 13;
+  el('pm-size-section').style.display  = isPizza   ? 'block' : 'none';
+  el('pm-half-section').style.display  = isPizza   ? 'block' : 'none';
+  el('pm-combo-section').style.display = isCombo13 ? 'block' : 'none';
 
   if(isPizza){
     renderSizeGrid();
     resetHalfToggle();
     buildHalfList();
   }
+  if(isCombo13) buildComboSection();
 
   updatePmTotal();
   el('product-modal').style.display = 'block';
@@ -988,6 +984,35 @@ function selectHalf(id){
   updatePmTotal();
 }
 
+function buildComboSection(){
+  const pizzas = getProducts().filter(p=>p.category==='Pizza');
+  document.getElementById('combo-salgada-list').innerHTML = pizzas.map(p=>{
+    const fb=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(p.name.charAt(0))}`;
+    return `<div class="combo-pizza-thumb" id="cst-${p.id}" onclick="selectComboSalgada(${p.id})">
+      <img src="${p.image||fb}" alt="${esc(p.name)}" style="width:100%;height:58px;object-fit:cover;display:block;" onerror="this.src='${fb}'"/>
+      <div style="padding:4px 5px;font-size:.6rem;font-weight:600;color:var(--text);line-height:1.2;">${esc(p.name)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('combo-doce-list').innerHTML = DOCE_FLAVORS.map(f=>
+    `<button class="combo-doce-pill" id="cdf-${f.id}" onclick="selectComboDoce('${f.id}','${f.name.replace(/'/g,'\\\'')}')">${f.emoji} ${esc(f.name)}</button>`
+  ).join('');
+  document.getElementById('combo-salgada-name').textContent = '';
+}
+
+function selectComboSalgada(id){
+  pm_comboSalgada = id;
+  document.querySelectorAll('.combo-pizza-thumb').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`cst-${id}`)?.classList.add('active');
+  const p = getProducts().find(x=>x.id===id);
+  document.getElementById('combo-salgada-name').textContent = p ? `Selecionada: ${p.name}` : '';
+}
+
+function selectComboDoce(id, name){
+  pm_comboDoce = name;
+  document.querySelectorAll('.combo-doce-pill').forEach(el=>el.classList.remove('active'));
+  document.getElementById(`cdf-${id}`)?.classList.add('active');
+}
+
 function changePmQty(d){
   pm_qty = Math.max(1, pm_qty+d);
   document.getElementById('pm-qty').textContent = pm_qty;
@@ -1012,12 +1037,27 @@ function updatePmTotal(){
 
 function addToCartFromModal(){
   if(!pm_product) return;
+
+  if(pm_product.id === 13){
+    if(!pm_comboSalgada){ showToast('Escolha o sabor da pizza salgada! 🍕','error'); return; }
+    if(!pm_comboDoce)   { showToast('Escolha o sabor do brotinho doce! 🍫','error'); return; }
+  }
+
   const size = PIZZA_SIZES.find(s=>s.id===pm_sizeId);
   const unit = calcPmUnitPrice();
-  const halfName = pm_halfOn && pm_halfProd ? pm_halfProd.name : null;
-  const sizeLabel = pm_product.category==='Pizza' ? size?.label : null;
 
-  const key = `${pm_product.id}_${pm_sizeId}_${pm_halfProd?.id||''}`;
+  let sizeLabel, halfName, key;
+  if(pm_product.id === 13){
+    const salgada = getProducts().find(p=>p.id===pm_comboSalgada);
+    sizeLabel = salgada?.name || null;
+    halfName  = pm_comboDoce;
+    key = `${pm_product.id}_s${pm_comboSalgada}_d${pm_comboDoce}`;
+  } else {
+    halfName  = pm_halfOn && pm_halfProd ? pm_halfProd.name : null;
+    sizeLabel = pm_product.category==='Pizza' ? size?.label : null;
+    key = `${pm_product.id}_${pm_sizeId}_${pm_halfProd?.id||''}`;
+  }
+
   const existing = cart.find(c=>c.key===key);
   if(existing){
     existing.qty += pm_qty;
