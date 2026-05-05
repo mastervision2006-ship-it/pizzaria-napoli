@@ -4,6 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Pizzaria Napoli</title>
+
+  <!-- Utmify UTMs -->
+  <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck data-utmify-prevent-subids async defer></script>
+
+  <!-- Utmify Pixel -->
+  <script async src="https://cdn.utmify.com.br/scripts/pixel/pixel.js" data-id="69e85dcce14607677a747490"></script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -1211,10 +1218,12 @@ document.getElementById('checkout-form').addEventListener('submit', async functi
 // ─────────────────────────────────────────────
 // PIX
 // ─────────────────────────────────────────────
-let pixCodeGlobal = '';
-let pixTxId       = null;
+let pixCodeGlobal  = '';
+let pixTxId        = null;
+let pixOrderTotal  = 0;
 
 async function openPixModal(amount, orderId){
+  pixOrderTotal = amount;
   // Show modal in loading state immediately
   const modal = document.getElementById('pix-modal');
   document.getElementById('pix-amount').textContent = fmt(amount);
@@ -1305,6 +1314,13 @@ async function confirmPix(){
 }
 
 function showSuccessModal(paymentConfirmed){
+  // Utmify purchase event
+  try{
+    if(typeof utmify === 'function'){
+      utmify('purchase', { value: pixOrderTotal, currency: 'BRL', transaction_id: pixTxId || undefined });
+    }
+  }catch(_){}
+
   const icon  = document.getElementById('success-icon');
   const title = document.getElementById('success-title');
   const msg   = document.getElementById('success-msg');
