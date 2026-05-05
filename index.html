@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Pizzaria Napoli</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --red:      #C41230;
+      --red-dk:   #8B0D21;
+      --red-lt:   #FEE2E2;
+      --gold:     #C8872A;
+      --cream:    #FFF8F0;
+      --text:     #1C0A0A;
+      --muted:    #856060;
+      --border:   #EEE0D8;
+      --green:    #1DAA54;
+      --wa:       #ECE5DD;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--cream);
+      color:var(--text);
+      min-height:100vh;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+    }
+    .font-display{font-family:'Cormorant Garamond',serif;}
+
+    /* ── Keyframes ── */
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes slideRight{from{transform:translateX(100%);}to{transform:translateX(0);}}
+    @keyframes slideBottom{from{transform:translateY(100%);}to{transform:translateY(0);}}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    @keyframes toastIn{from{opacity:0;transform:translateY(-10px) scale(.95);}to{opacity:1;transform:none;}}
+    @keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateY(-8px) scale(.95);}}
+    @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+    @keyframes typeBounce{0%,80%,100%{transform:translateY(0);opacity:.5;}40%{transform:translateY(-5px);opacity:1;}}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* ── Product cards stagger ── */
+    .p-card{opacity:0;}
+    .p-card:nth-child(1){animation:slideUp .38s 0ms  cubic-bezier(.16,1,.3,1) forwards;}
+    .p-card:nth-child(2){animation:slideUp .38s 60ms cubic-bezier(.16,1,.3,1) forwards;}
+    .p-card:nth-child(3){animation:slideUp .38s 120ms cubic-bezier(.16,1,.3,1) forwards;}
+    .p-card:nth-child(4){animation:slideUp .38s 180ms cubic-bezier(.16,1,.3,1) forwards;}
+    .p-card:nth-child(5){animation:slideUp .38s 240ms cubic-bezier(.16,1,.3,1) forwards;}
+    .p-card:nth-child(6){animation:slideUp .38s 300ms cubic-bezier(.16,1,.3,1) forwards;}
+    .p-card:nth-child(7){animation:slideUp .38s 360ms cubic-bezier(.16,1,.3,1) forwards;}
+    .p-card:nth-child(8){animation:slideUp .38s 420ms cubic-bezier(.16,1,.3,1) forwards;}
+    .p-card:nth-child(n+9){animation:slideUp .38s 480ms cubic-bezier(.16,1,.3,1) forwards;}
+
+    /* ── Scrollbar thin ── */
+    ::-webkit-scrollbar{width:3px;height:3px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:2px;}
+
+    /* ── Form input ── */
+    .inp{
+      width:100%;border:1.5px solid var(--border);border-radius:.75rem;
+      padding:.7rem 1rem;font-size:.875rem;font-family:'DM Sans',sans-serif;
+      background:#FFFAF7;color:var(--text);outline:none;
+      transition:border-color .15s,box-shadow .15s;
+    }
+    .inp:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(196,18,48,.1);}
+
+    /* ── Buttons ── */
+    .btn-red{
+      background:var(--red);color:#fff;font-weight:700;border:none;
+      cursor:pointer;border-radius:1rem;
+      transition:background .15s,transform .12s;
+    }
+    .btn-red:hover{background:var(--red-dk);}
+    .btn-red:active{transform:scale(.96);}
+
+    .btn-ghost{
+      background:#F0E8E0;color:var(--muted);font-weight:600;border:none;
+      cursor:pointer;border-radius:1rem;
+      transition:background .15s;
+    }
+    .btn-ghost:hover{background:#E8DDD4;}
+
+    /* ── Toast ── */
+    .toast{animation:toastIn .28s cubic-bezier(.16,1,.3,1) forwards;}
+    .toast.out{animation:toastOut .25s ease forwards;}
+
+    /* ── Chat bubbles ── */
+    .bub-bot{border-radius:4px 18px 18px 18px;}
+    .bub-usr{border-radius:18px 4px 18px 18px;}
+
+    /* ── Typing ── */
+    .tdot{animation:typeBounce 1.3s infinite;}
+    .tdot:nth-child(2){animation-delay:.18s;}
+    .tdot:nth-child(3){animation-delay:.36s;}
+
+    /* ── Modals backdrop ── */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);}
+
+    /* ── Size pill ── */
+    .size-pill{
+      border:2px solid var(--border);border-radius:.875rem;
+      padding:.625rem .75rem;cursor:pointer;text-align:center;
+      transition:all .18s;background:#fff;
+    }
+    .size-pill:hover{border-color:var(--red);}
+    .size-pill.active{border-color:var(--red);background:var(--red-lt);}
+
+    /* ── Half-picker thumb ── */
+    .half-thumb{
+      flex-shrink:0;width:80px;border:2px solid var(--border);
+      border-radius:.875rem;overflow:hidden;cursor:pointer;transition:border-color .15s;
+    }
+    .half-thumb.active{border-color:var(--red);}
+    .half-thumb:hover{border-color:var(--red);}
+
+    /* ── Payment method ── */
+    .pay-opt{
+      border:2px solid var(--border);border-radius:1rem;padding:.875rem;
+      cursor:pointer;display:flex;align-items:center;gap:10px;
+      transition:all .15s;background:#fff;
+    }
+    .pay-opt:hover{border-color:var(--red);}
+    .pay-opt.active{border-color:var(--red);background:var(--red-lt);}
+
+    /* ── Cart item qty ── */
+    .qty-btn{
+      width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;
+      background:#F0E8E0;color:var(--text);font-weight:700;font-size:1rem;
+      display:flex;align-items:center;justify-content:center;
+      transition:background .15s;
+    }
+    .qty-btn:hover{background:var(--red);color:#fff;}
+
+    /* ── Hero ── */
+    .hero-bg{
+      background-image:
+        linear-gradient(to bottom, rgba(15,5,5,.3) 0%, rgba(15,5,5,.75) 100%),
+        url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1200&auto=format&q=85');
+      background-size:cover;
+      background-position:center;
+    }
+
+    /* ── Tab ── */
+    .tab{
+      padding:.45rem .875rem;border-radius:9999px;
+      font-size:.8125rem;font-weight:600;cursor:pointer;
+      border:1.5px solid var(--border);background:#fff;color:var(--muted);
+      transition:all .2s;white-space:nowrap;
+    }
+    .tab.on{
+      background:var(--red);color:#fff;border-color:var(--red);
+      box-shadow:0 4px 14px rgba(196,18,48,.35);
+    }
+
+    /* ── Card image zoom ── */
+    .card-img-wrap{overflow:hidden;}
+    .card-img-wrap img{transition:transform .4s cubic-bezier(.16,1,.3,1);}
+    .p-card:hover .card-img-wrap img{transform:scale(1.06);}
+
+    /* ── PIX QR ── */
+    #pix-qr{image-rendering:pixelated;}
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     STICKY HEADER
+═══════════════════════════════════════════ -->
+<div id="site-header" style="position:sticky;top:0;z-index:50;box-shadow:0 1px 16px rgba(28,10,10,.1);">
+
+  <!-- Geo banner -->
+  <div id="geo-banner" style="background:linear-gradient(135deg,#1DAA54,#0E8C42);padding:.55rem 1rem;display:flex;align-items:center;justify-content:center;gap:7px;">
+    <svg width="12" height="12" viewBox="0 0 20 20" fill="white" style="opacity:.85;flex-shrink:0;">
+      <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+    </svg>
+    <span id="geo-txt" style="font-size:.8125rem;font-weight:600;color:#fff;letter-spacing:.01em;">Verificando sua localização...</span>
+  </div>
+
+  <!-- Header row -->
+  <header style="background:#fff;border-bottom:1.5px solid var(--border);">
+    <div style="max-width:580px;margin:0 auto;padding:.875rem 1.25rem;display:flex;align-items:center;gap:12px;position:relative;">
+
+      <!-- Logo (centered) -->
+      <div style="flex:1;text-align:center;">
+        <h1 class="font-display" style="font-size:clamp(1.7rem,5vw,2.2rem);font-weight:700;color:var(--red);line-height:1;letter-spacing:-.01em;">Pizzaria Napoli</h1>
+        <p style="font-size:.68rem;font-weight:600;color:var(--muted);letter-spacing:.18em;text-transform:uppercase;margin-top:2px;">As melhores pizzas da cidade</p>
+      </div>
+
+      <!-- Cart button -->
+      <button onclick="openCart()" style="position:absolute;right:1.25rem;width:44px;height:44px;border-radius:50%;background:var(--red);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(196,18,48,.35);transition:transform .15s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform='scale(1)'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        <span id="cart-badge" style="position:absolute;top:-2px;right:-2px;min-width:18px;height:18px;background:#FFC107;border-radius:9999px;border:2px solid var(--cream);font-size:.6rem;font-weight:800;color:#1C0A0A;display:none;align-items:center;justify-content:center;padding:0 4px;">0</span>
+      </button>
+
+      <!-- Hidden admin gear -->
+      <button onclick="switchView('admin')" title="Admin" tabindex="-1"
+        style="position:absolute;left:1.25rem;width:32px;height:32px;border-radius:50%;border:none;background:transparent;cursor:pointer;opacity:0;transition:opacity .2s;display:flex;align-items:center;justify-content:center;"
+        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0'" onfocus="this.style.opacity='1'" onblur="this.style.opacity='0'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+      </button>
+    </div>
+
+    <!-- Category tabs -->
+    <div style="max-width:580px;margin:0 auto;padding:0 1rem .875rem;display:flex;gap:8px;overflow-x:auto;">
+      <button id="tab-all"   class="tab on"  onclick="filterCat('all')">🍽️ Todos</button>
+      <button id="tab-Pizza" class="tab"     onclick="filterCat('Pizza')">🍕 Pizzas</button>
+      <button id="tab-Combo" class="tab"     onclick="filterCat('Combo')">🎁 Combos</button>
+    </div>
+  </header>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MENU VIEW
+═══════════════════════════════════════════ -->
+<div id="menu-view">
+
+  <!-- Hero -->
+  <section class="hero-bg" style="padding:3rem 1.5rem 2.5rem;text-align:center;">
+    <div style="max-width:480px;margin:0 auto;">
+      <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.35rem .875rem;border-radius:9999px;margin-bottom:1rem;">
+        🔥 Abre às 18h • Delivery em 30min
+      </span>
+      <h2 class="font-display" style="font-size:clamp(2.4rem,8vw,3.5rem);font-weight:700;color:#fff;line-height:1.1;margin-bottom:.75rem;">
+        Sabor que<br/><em>conquista</em>
+      </h2>
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;color:rgba(255,255,255,.85);font-size:.8125rem;font-weight:500;">
+        <span style="letter-spacing:.05em;">⭐⭐⭐⭐⭐</span>
+        <span>4.9 · 2.3k avaliações</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products -->
+  <main style="max-width:580px;margin:0 auto;padding:1.75rem 1rem 8rem;">
+    <div id="products-container"></div>
+  </main>
+
+  <footer style="background:#fff;border-top:1.5px solid var(--border);padding:1.5rem 1rem;text-align:center;">
+    <p style="font-size:.8125rem;font-weight:500;color:var(--muted);">© 2026 Pizzaria Napoli · Feito com ❤️</p>
+    <button onclick="switchView('admin')" style="margin-top:.5rem;font-size:.7rem;color:var(--border);background:none;border:none;cursor:pointer;">⚙ Admin</button>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ADMIN VIEW
+═══════════════════════════════════════════ -->
+<div id="admin-view" style="display:none;min-height:100vh;background:#F7F1EE;">
+  <div style="position:sticky;top:0;z-index:40;background:#fff;border-bottom:1.5px solid var(--border);box-shadow:0 1px 8px rgba(28,10,10,.06);">
+    <div style="max-width:680px;margin:0 auto;padding:1rem 1.25rem;display:flex;align-items:center;gap:12px;">
+      <button onclick="switchView('menu')" class="btn-red" style="padding:.4rem .875rem;font-size:.8125rem;border-radius:9999px;display:flex;align-items:center;gap:5px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 19l-7-7 7-7"/></svg> Menu
+      </button>
+      <div>
+        <h2 class="font-display" style="font-size:1.4rem;font-weight:700;line-height:1.1;">Painel Admin</h2>
+        <p style="font-size:.7rem;color:var(--muted);">Gerencie o cardápio</p>
+      </div>
+    </div>
+  </div>
+  <main style="max-width:680px;margin:0 auto;padding:1.5rem 1rem 5rem;">
+    <button onclick="openAdminForm(null)" class="btn-red" style="width:100%;padding:.875rem;font-size:.875rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(196,18,48,.28);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16m8-8H4"/></svg>
+      Adicionar Produto
+    </button>
+
+    <!-- Admin Form -->
+    <div id="admin-form-wrap" style="display:none;background:#fff;border-radius:1.25rem;overflow:hidden;border:1.5px solid var(--border);margin-bottom:1.25rem;box-shadow:0 4px 24px rgba(28,10,10,.07);">
+      <div style="background:var(--red);padding:1rem 1.25rem;">
+        <h3 id="admin-form-title" style="font-weight:700;color:#fff;font-size:1rem;">Novo Produto</h3>
+      </div>
+      <form id="admin-form" style="padding:1.25rem;display:flex;flex-direction:column;gap:14px;">
+        <input type="hidden" id="af-id"/>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Nome *</label>
+          <input id="af-name" class="inp" type="text" placeholder="Ex: Pizza Margherita"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Descrição *</label>
+          <textarea id="af-desc" class="inp" rows="2" placeholder="Ingredientes..." style="resize:none;"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Preço (R$) *</label>
+            <input id="af-price" class="inp" type="number" step="0.01" min="0.01" placeholder="49.90"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Categoria *</label>
+            <select id="af-cat" class="inp" style="appearance:none;">
+              <option value="">Selecione...</option>
+              <option value="Pizza">🍕 Pizza</option>
+              <option value="Combo">🎁 Combo</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">URL da Imagem</label>
+          <input id="af-img" class="inp" type="url" placeholder="https://..."/>
+        </div>
+        <div style="display:flex;gap:10px;padding-top:4px;">
+          <button type="submit" class="btn-red" style="flex:1;padding:.8rem;font-size:.875rem;">Salvar</button>
+          <button type="button" onclick="closeAdminForm()" class="btn-ghost" style="padding:.8rem 1.25rem;font-size:.875rem;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="admin-list"></div>
+  </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PRODUCT DETAIL MODAL (bottom sheet)
+═══════════════════════════════════════════ -->
+<div id="product-modal" style="display:none;position:fixed;inset:0;z-index:60;">
+  <div class="modal-bg" style="animation:fadeIn .25s ease;" onclick="closeProductModal()"></div>
+  <div id="product-sheet" style="position:absolute;bottom:0;left:0;right:0;max-width:580px;margin:0 auto;background:#fff;border-radius:1.75rem 1.75rem 0 0;overflow:hidden;animation:slideBottom .35s cubic-bezier(.16,1,.3,1);max-height:92vh;display:flex;flex-direction:column;">
+
+    <!-- Image -->
+    <div style="position:relative;height:220px;flex-shrink:0;">
+      <img id="pm-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,transparent 50%);pointer-events:none;"></div>
+      <button onclick="closeProductModal()" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.4);border:none;cursor:pointer;color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">✕</button>
+      <div style="position:absolute;bottom:14px;left:16px;right:60px;">
+        <span id="pm-badge" style="font-size:.65rem;font-weight:700;color:#fff;padding:2px 8px;border-radius:9999px;background:var(--red);">Pizza</span>
+        <h2 id="pm-name" class="font-display" style="font-size:1.6rem;font-weight:700;color:#fff;margin-top:3px;line-height:1.15;"></h2>
+      </div>
+    </div>
+
+    <!-- Scrollable content -->
+    <div style="overflow-y:auto;flex:1;">
+      <div style="padding:1.25rem 1.25rem 1rem;">
+
+        <p id="pm-desc" style="font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem;"></p>
+
+        <!-- SIZE SELECTOR (only pizzas) -->
+        <div id="pm-size-section" style="margin-bottom:1.25rem;">
+          <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.625rem;">Tamanho</p>
+          <div id="size-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+        </div>
+
+        <!-- MEIA A MEIA (only pizzas) -->
+        <div id="pm-half-section" style="margin-bottom:1.25rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+            <div>
+              <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);">Meia a Meia</p>
+              <p style="font-size:.7rem;color:var(--muted);margin-top:1px;">Adicione um segundo sabor</p>
+            </div>
+            <!-- Toggle -->
+            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+              <input type="checkbox" id="half-toggle" onchange="onHalfToggle()" style="opacity:0;width:0;height:0;"/>
+              <span id="half-track" style="position:absolute;inset:0;background:#DDD;border-radius:9999px;transition:background .2s;"></span>
+              <span id="half-thumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .2s;"></span>
+            </label>
+          </div>
+
+          <!-- Half picker (hidden by default) -->
+          <div id="half-picker" style="display:none;">
+            <div id="half-list" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;"></div>
+            <div id="half-selected-name" style="font-size:.75rem;font-weight:600;color:var(--red);margin-top:6px;min-height:18px;"></div>
+          </div>
+        </div>
+
+        <!-- QTY + ADD -->
+        <div style="display:flex;align-items:center;gap:12px;position:sticky;bottom:0;background:#fff;padding:.75rem 0 0;border-top:1.5px solid var(--border);margin:0 -1.25rem;padding-left:1.25rem;padding-right:1.25rem;">
+          <div style="display:flex;align-items:center;gap:8px;background:#F0E8E0;border-radius:9999px;padding:6px 10px;">
+            <button class="qty-btn" onclick="changePmQty(-1)">−</button>
+            <span id="pm-qty" style="font-weight:700;font-size:1rem;min-width:20px;text-align:center;">1</span>
+            <button class="qty-btn" onclick="changePmQty(1)">+</button>
+          </div>
+          <button onclick="addToCartFromModal()" class="btn-red" style="flex:1;padding:.85rem;font-size:.875rem;display:flex;align-items:center;justify-content:space-between;">
+            <span>Adicionar ao Carrinho</span>
+            <span id="pm-total" style="font-weight:700;"></span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     CART DRAWER
+═══════════════════════════════════════════ -->
+<div id="cart-drawer" style="display:none;position:fixed;inset:0;z-index:65;">
+  <div class="modal-bg" style="animation:fadeIn .25s ease;" onclick="closeCart()"></div>
+  <div style="position:absolute;top:0;right:0;bottom:0;width:100%;max-width:420px;background:#fff;display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(0,0,0,.15);animation:slideRight .3s cubic-bezier(.16,1,.3,1);">
+
+    <!-- Drawer header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.25rem 1rem;border-bottom:1.5px solid var(--border);">
+      <div>
+        <h2 class="font-display" style="font-size:1.5rem;font-weight:700;color:var(--text);">Seu Pedido</h2>
+        <p id="cart-count-label" style="font-size:.75rem;color:var(--muted);"></p>
+      </div>
+      <button onclick="closeCart()" style="width:36px;height:36px;border-radius:50%;background:#F0E8E0;border:none;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+
+    <!-- Items list -->
+    <div id="cart-items" style="flex:1;overflow-y:auto;padding:1rem 1.25rem;"></div>
+
+    <!-- Footer -->
+    <div style="padding:1rem 1.25rem 1.25rem;border-top:1.5px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1rem;">
+        <span style="font-size:.875rem;color:var(--muted);font-weight:500;">Subtotal</span>
+        <span id="cart-subtotal" style="font-size:1.25rem;font-weight:700;color:var(--red);"></span>
+      </div>
+      <button onclick="openCheckout()" class="btn-red" style="width:100%;padding:1rem;font-size:.9375rem;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(196,18,48,.3);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        Finalizar Pedido
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     CHECKOUT MODAL
+═══════════════════════════════════════════ -->
+<div id="checkout-modal" style="display:none;position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:1rem;">
+  <div class="modal-bg" style="animation:fadeIn .25s ease;" onclick="closeCheckout()"></div>
+  <div style="position:relative;background:#fff;border-radius:1.5rem;width:100%;max-width:480px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.22);animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
+
+    <!-- Checkout header -->
+    <div style="background:var(--red);padding:1.25rem 1.25rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <div>
+        <h2 style="font-weight:700;color:#fff;font-size:1.1rem;">Finalizar Pedido</h2>
+        <p style="font-size:.7rem;color:rgba(255,255,255,.75);margin-top:2px;">Preencha seus dados para entrega</p>
+      </div>
+      <button onclick="closeCheckout()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);border:none;cursor:pointer;color:#fff;font-size:1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+
+    <!-- Form -->
+    <form id="checkout-form" style="overflow-y:auto;flex:1;padding:1.25rem;display:flex;flex-direction:column;gap:14px;">
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="grid-column:span 2;">
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Nome completo *</label>
+          <input id="ck-name" class="inp" type="text" placeholder="Seu nome"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">WhatsApp *</label>
+          <input id="ck-phone" class="inp" type="tel" placeholder="(11) 9 0000-0000"/>
+        </div>
+        <div>
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">CEP</label>
+          <input id="ck-cep" class="inp" type="text" placeholder="00000-000"/>
+        </div>
+        <div style="grid-column:span 2;">
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Endereço *</label>
+          <input id="ck-addr" class="inp" type="text" placeholder="Rua, número, bairro"/>
+        </div>
+        <div style="grid-column:span 2;">
+          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Complemento</label>
+          <input id="ck-comp" class="inp" type="text" placeholder="Apto, bloco, referência..."/>
+        </div>
+      </div>
+
+      <!-- Payment method — PIX only -->
+      <div style="background:#F0FDF4;border:1.5px solid #A7F3D0;border-radius:1rem;padding:1rem;display:flex;align-items:center;gap:12px;">
+        <div style="width:44px;height:44px;background:linear-gradient(135deg,#32BCAD,#00B377);border-radius:.75rem;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">📱</div>
+        <div>
+          <p style="font-weight:700;font-size:.9375rem;color:#065F46;">PIX</p>
+          <p style="font-size:.75rem;color:#047857;margin-top:2px;">Pagamento instantâneo · QR Code gerado na próxima etapa</p>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" style="margin-left:auto;flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+
+      <!-- Order summary -->
+      <div style="background:#FFF8F0;border-radius:1rem;padding:1rem;border:1.5px solid var(--border);">
+        <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.625rem;">Resumo do Pedido</p>
+        <div id="ck-summary" style="display:flex;flex-direction:column;gap:5px;"></div>
+        <div style="border-top:1.5px solid var(--border);margin-top:.75rem;padding-top:.75rem;display:flex;justify-content:space-between;align-items:baseline;">
+          <span style="font-weight:600;font-size:.875rem;">Total</span>
+          <span id="ck-total" style="font-weight:800;font-size:1.2rem;color:var(--red);"></span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-red" style="padding:1rem;font-size:.9375rem;">
+        Gerar Pedido 🚀
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PIX MODAL
+═══════════════════════════════════════════ -->
+<div id="pix-modal" style="display:none;position:fixed;inset:0;z-index:80;align-items:center;justify-content:center;padding:1rem;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);animation:fadeIn .25s;"></div>
+  <div style="position:relative;background:#fff;border-radius:1.5rem;width:100%;max-width:360px;padding:2rem 1.5rem;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:slideUp .35s cubic-bezier(.16,1,.3,1);text-align:center;">
+
+    <!-- Header -->
+    <div style="width:60px;height:60px;background:linear-gradient(135deg,#32BCAD,#00B377);border-radius:1rem;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:1.75rem;">📱</div>
+    <h2 class="font-display" style="font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:4px;">Pague via PIX</h2>
+    <p id="pix-amount" style="font-size:1.25rem;font-weight:800;color:var(--red);margin-bottom:1.25rem;"></p>
+
+    <!-- Loading state -->
+    <div id="pix-loading" style="display:none;flex-direction:column;align-items:center;gap:12px;padding:2rem 0;">
+      <div style="width:48px;height:48px;border:4px solid #E5E7EB;border-top-color:#059669;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <p style="font-size:.875rem;color:var(--muted);font-weight:500;">Gerando cobrança PIX...</p>
+    </div>
+
+    <!-- PIX content (shown after API response) -->
+    <div id="pix-content" style="display:none;">
+      <!-- QR Code -->
+      <div style="background:#F9F9F9;border-radius:1.25rem;padding:1rem;margin-bottom:1.25rem;border:1.5px solid var(--border);">
+        <img id="pix-qr" src="" alt="QR Code PIX" style="width:200px;height:200px;display:block;margin:0 auto;border-radius:.5rem;"/>
+        <p style="font-size:.7rem;color:var(--muted);margin-top:.625rem;">Escaneie o QR Code com o app do seu banco</p>
+      </div>
+
+      <!-- PIX code copy -->
+      <div style="background:#F0F9F5;border:1.5px solid #A7F3D0;border-radius:.875rem;padding:.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:8px;">
+        <p id="pix-code-display" style="font-size:.65rem;font-family:monospace;color:#065F46;flex:1;word-break:break-all;text-align:left;line-height:1.4;"></p>
+        <button onclick="copyPix()" style="background:#059669;color:#fff;border:none;border-radius:.5rem;padding:.4rem .625rem;font-size:.7rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;" onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">Copiar</button>
+      </div>
+
+      <p style="font-size:.7rem;color:var(--muted);line-height:1.5;margin-bottom:1.25rem;">Após o pagamento, você receberá a confirmação via WhatsApp em instantes 🚀</p>
+
+      <button onclick="confirmPix()" class="btn-red" style="width:100%;padding:.9rem;font-size:.875rem;">
+        Já realizei o pagamento ✓
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     ORDER SUCCESS MODAL
+═══════════════════════════════════════════ -->
+<div id="success-modal" style="display:none;position:fixed;inset:0;z-index:85;align-items:center;justify-content:center;padding:1rem;">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);animation:fadeIn .25s;"></div>
+  <div style="position:relative;background:#fff;border-radius:1.5rem;width:100%;max-width:340px;padding:2rem 1.5rem;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:slideUp .35s cubic-bezier(.16,1,.3,1);text-align:center;">
+    <div style="font-size:4rem;margin-bottom:1rem;">🎉</div>
+    <h2 class="font-display" style="font-size:1.75rem;font-weight:700;color:var(--text);margin-bottom:.5rem;">Pedido Recebido!</h2>
+    <p style="font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.5rem;">Seu pedido foi confirmado e já está sendo preparado. Entrega em até 30 minutos! 🍕🛵</p>
+    <button onclick="closeSuccess()" class="btn-red" style="width:100%;padding:.9rem;font-size:.875rem;">
+      Ótimo, obrigado! 🙌
+    </button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     CHAT FLOAT + MODAL
+═══════════════════════════════════════════ -->
+<button id="chat-fab" onclick="toggleChat()" style="position:fixed;bottom:1.5rem;right:1.25rem;z-index:55;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#25D366,#1DAA54);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(29,170,84,.45);transition:transform .18s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+  <svg id="fab-open" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+  </svg>
+  <svg id="fab-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" style="display:none;">
+    <path d="M18 6L6 18M6 6l12 12"/>
+  </svg>
+  <span id="chat-dot" style="position:absolute;top:-2px;right:-2px;width:18px;height:18px;background:#EF4444;border-radius:50%;border:2px solid var(--cream);font-size:.6rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;">1</span>
+</button>
+
+<div id="chat-modal" style="display:none;position:fixed;z-index:54;bottom:82px;right:16px;left:16px;max-width:400px;height:480px;margin-left:auto;background:#fff;border-radius:1.25rem;overflow:hidden;flex-direction:column;box-shadow:0 24px 60px rgba(28,10,10,.2);animation:slideUp .3s cubic-bezier(.16,1,.3,1);">
+  <div style="background:linear-gradient(135deg,#1DAA54,#128C7E);padding:1rem;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+    <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">🍕</div>
+    <div style="flex:1;">
+      <p style="color:#fff;font-weight:700;font-size:.875rem;">Assistente Napoli</p>
+      <div style="display:flex;align-items:center;gap:5px;">
+        <span style="width:7px;height:7px;background:#4ade80;border-radius:50%;display:inline-block;"></span>
+        <p style="color:rgba(255,255,255,.75);font-size:.7rem;">Online agora</p>
+      </div>
+    </div>
+    <button onclick="toggleChat()" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.9rem;">✕</button>
+  </div>
+  <div id="chat-msgs" style="flex:1;overflow-y:auto;padding:1rem;background:var(--wa);display:flex;flex-direction:column;gap:8px;"></div>
+  <div style="padding:.625rem;background:#fff;border-top:1.5px solid var(--border);display:flex;gap:7px;flex-shrink:0;">
+    <input id="chat-in" type="text" placeholder="Digite uma mensagem..." style="flex:1;background:#F0EFEF;border:none;border-radius:9999px;padding:.55rem 1rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;" onkeydown="if(event.key==='Enter'){event.preventDefault();sendMsg();}"/>
+    <button onclick="sendMsg()" style="width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;background:#25D366;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;" onmouseover="this.style.background='#1DAA54'" onmouseout="this.style.background='#25D366'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div id="toasts" style="position:fixed;top:16px;right:16px;left:16px;max-width:320px;margin-left:auto;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;"></div>
+
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════ -->
+<script>
+
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+const STORE = 'napoli_v3';
+const CART_STORE = 'napoli_cart_v3';
+
+const PIZZA_SIZES = [
+  { id:'broto', label:'Broto',  sub:'25cm · 4 fatias', mult:.60 },
+  { id:'media', label:'Média',  sub:'30cm · 6 fatias', mult:.80 },
+  { id:'grande',label:'Grande', sub:'35cm · 8 fatias', mult:1.00 },
+  { id:'gg',    label:'GG',     sub:'40cm · 12 fatias',mult:1.30 },
+];
+
+const DEFAULT_PRODUCTS = [
+  { id:1,  category:'Pizza', name:'Margherita',         price:42.90, description:'Molho de tomate artesanal, muçarela fior di latte, manjericão fresco e azeite extravirgem.',           image:'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&fit=crop&auto=format&q=80' },
+  { id:2,  category:'Pizza', name:'Calabresa',          price:44.90, description:'Calabresa artesanal fatiada, cebola roxa caramelizada, muçarela e orégano fresco.',                   image:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&fit=crop&auto=format&q=80' },
+  { id:3,  category:'Pizza', name:'Frango com Catupiry',price:47.90, description:'Peito de frango grelhado desfiado, catupiry original cremoso e milho verde.',                          image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&fit=crop&auto=format&q=80' },
+  { id:4,  category:'Pizza', name:'Portuguesa',         price:49.90, description:'Presunto cozido, ovos, azeitona preta, cebola, pimentão colorido e muçarela.',                        image:'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&fit=crop&auto=format&q=80' },
+  { id:5,  category:'Pizza', name:'Quatro Queijos',     price:51.90, description:'Muçarela, gorgonzola, parmesão ralado na hora e provolone sobre massa de fermentação natural.',       image:'https://images.unsplash.com/photo-1548369937-47519962c11a?w=600&fit=crop&auto=format&q=80' },
+  { id:6,  category:'Pizza', name:'Bacon Lovers',       price:53.90, description:'Double bacon crocante, cheddar especial, muçarela e molho barbecue artesanal.',                       image:'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&fit=crop&auto=format&q=80' },
+  { id:7,  category:'Pizza', name:'Pepperoni',          price:49.90, description:'Generosas fatias de pepperoni importado, muçarela especial e orégano italiano.',                      image:'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&fit=crop&auto=format&q=80' },
+  { id:8,  category:'Pizza', name:'Vegetariana',        price:45.90, description:'Abobrinha, pimentão colorido, tomate cereja, berinjela, azeitona e muçarela.',                        image:'https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=600&fit=crop&auto=format&q=80' },
+  { id:9,  category:'Combo', name:'Pizza + Refrigerante Lata',      price:52.90, description:'Qualquer pizza + 1 refrigerante lata 350ml à sua escolha.', image:'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=600&fit=crop&auto=format&q=80' },
+  { id:10, category:'Combo', name:'2 Pizzas + Refrigerante 2L',     price:89.90, description:'Escolha 2 pizzas + 1 refrigerante 2L. Ideal para o casal!',  image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&fit=crop&auto=format&q=80' },
+  { id:11, category:'Combo', name:'Combo Família',                   price:129.90,description:'3 pizzas à escolha + 1 refrigerante 2L. Reunião perfeita!',  image:'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&fit=crop&auto=format&q=80' },
+  { id:12, category:'Combo', name:'Combo Casal',                     price:94.90, description:'2 pizzas + 1 bebida especial. O jantar dos sonhos!',          image:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&fit=crop&auto=format&q=80' },
+];
+
+function getProducts(){ try{ const r=localStorage.getItem(STORE); if(r) return JSON.parse(r); }catch(_){} localStorage.setItem(STORE,JSON.stringify(DEFAULT_PRODUCTS)); return DEFAULT_PRODUCTS; }
+function saveProducts(l){ localStorage.setItem(STORE,JSON.stringify(l)); }
+function nextId(){ const l=getProducts(); return l.length?Math.max(...l.map(p=>p.id))+1:1; }
+function fmt(n){ return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(n); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ─────────────────────────────────────────────
+// GEOLOCATION  (GPS → Nominatim → fallback ipapi)
+// ─────────────────────────────────────────────
+async function initGeo(){
+  if(!navigator.geolocation){ fetchIPCity(); return; }
+  navigator.geolocation.getCurrentPosition(
+    async pos => {
+      const city = await reversGeocode(pos.coords.latitude, pos.coords.longitude);
+      city ? setGeo(city) : fetchIPCity();
+    },
+    () => fetchIPCity(),
+    { timeout:7000 }
+  );
+}
+
+async function reversGeocode(lat,lon){
+  try{
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,{ headers:{'Accept-Language':'pt-BR,pt;q=0.9'} });
+    const d = await r.json();
+    return d.address?.city || d.address?.town || d.address?.village || d.address?.municipality || '';
+  }catch(_){ return ''; }
+}
+
+async function fetchIPCity(){
+  try{
+    const r = await fetch('https://ipapi.co/json/');
+    const d = await r.json();
+    setGeo(d.city || '');
+  }catch(_){ setGeo(''); }
+}
+
+function setGeo(city){
+  const text = city
+    ? `📍 ${city} • Entrega grátis em até 30 minutos 🚀`
+    : 'Entrega grátis na sua região • Chega em até 30 minutos 🚀';
+  document.getElementById('geo-txt').textContent = text;
+}
+
+// ─────────────────────────────────────────────
+// MENU RENDER
+// ─────────────────────────────────────────────
+let activeCat = 'all';
+
+function renderMenu(){
+  const box  = document.getElementById('products-container');
+  const prods = getProducts();
+  const cats  = activeCat === 'all' ? ['Pizza','Combo'] : [activeCat];
+  const labels = { Pizza:'🍕 Pizzas', Combo:'🎁 Combos' };
+  let html = '';
+
+  for(const cat of cats){
+    const items = prods.filter(p=>p.category===cat);
+    if(!items.length) continue;
+    html += `
+      <section style="margin-bottom:2.5rem;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <h2 class="font-display" style="font-size:1.6rem;font-weight:700;white-space:nowrap;">${labels[cat]}</h2>
+          <div style="flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);"></div>
+          <span style="font-size:.7rem;font-weight:600;color:var(--muted);flex-shrink:0;">${items.length} opções</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          ${items.map(renderCard).join('')}
+        </div>
+      </section>`;
+  }
+
+  if(!html) html = `<div style="text-align:center;padding:5rem 1rem;"><div style="font-size:3.5rem;margin-bottom:1rem;">🍕</div><p style="font-weight:600;color:var(--muted);">Nenhum produto encontrado</p></div>`;
+  box.innerHTML = html;
+}
+
+function renderCard(p){
+  const price    = fmt(p.price);
+  const fallback = `https://placehold.co/600x400/fee2e2/c41230?text=${encodeURIComponent(p.name)}`;
+  const img      = p.image || fallback;
+  const badgeBg  = p.category==='Pizza' ? 'rgba(196,18,48,.88)' : 'rgba(200,135,42,.92)';
+  const sizeNote = p.category==='Pizza' ? '<span style="font-size:.65rem;color:var(--muted);">a partir de</span>' : '';
+
+  return `
+    <article class="p-card" onclick="openProductModal(${p.id})" style="background:#fff;border-radius:1.1rem;overflow:hidden;display:flex;border:1.5px solid var(--border);transition:box-shadow .2s,border-color .2s;cursor:pointer;box-shadow:0 2px 14px rgba(196,18,48,.05);" onmouseover="this.style.boxShadow='0 8px 28px rgba(196,18,48,.13)';this.style.borderColor='#F9C0C0';" onmouseout="this.style.boxShadow='0 2px 14px rgba(196,18,48,.05)';this.style.borderColor='var(--border)';">
+      <div class="card-img-wrap" style="width:145px;min-height:145px;flex-shrink:0;position:relative;overflow:hidden;">
+        <img src="${img}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.src='${fallback}'"/>
+        <div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,rgba(255,255,255,.1));pointer-events:none;"></div>
+        <span style="position:absolute;top:8px;left:8px;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:9999px;color:#fff;backdrop-filter:blur(6px);background:${badgeBg};">${p.category}</span>
+      </div>
+      <div style="padding:.875rem;display:flex;flex-direction:column;justify-content:space-between;flex:1;min-width:0;">
+        <div>
+          <h3 style="font-weight:700;font-size:.9375rem;color:var(--text);line-height:1.3;margin-bottom:4px;">${esc(p.name)}</h3>
+          <p style="font-size:.75rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(p.description)}</p>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;">
+          <div>${sizeNote}<div style="font-weight:800;font-size:1.1rem;color:var(--red);line-height:1;">${price}</div></div>
+          <button onclick="event.stopPropagation();openProductModal(${p.id})" style="background:var(--red);color:#fff;font-size:.75rem;font-weight:700;padding:.45rem 1rem;border-radius:9999px;border:none;cursor:pointer;transition:background .15s,transform .12s;white-space:nowrap;" onmouseover="this.style.background='var(--red-dk)'" onmouseout="this.style.background='var(--red)'" onmousedown="this.style.transform='scale(.93)'" onmouseup="this.style.transform='scale(1)'">Ver opções</button>
+        </div>
+      </div>
+    </article>`;
+}
+
+function filterCat(cat){
+  activeCat = cat;
+  document.querySelectorAll('.tab').forEach(b=>{ b.classList.remove('on'); });
+  document.getElementById(`tab-${cat}`).classList.add('on');
+  renderMenu();
+}
+
+// ─────────────────────────────────────────────
+// PRODUCT MODAL
+// ─────────────────────────────────────────────
+let pm_product   = null;
+let pm_sizeId    = 'grande';
+let pm_qty       = 1;
+let pm_halfOn    = false;
+let pm_halfProd  = null;
+
+function openProductModal(id){
+  const p = getProducts().find(x=>x.id===id);
+  if(!p) return;
+  pm_product  = p;
+  pm_sizeId   = 'grande';
+  pm_qty      = 1;
+  pm_halfOn   = false;
+  pm_halfProd = null;
+
+  const fallback = `https://placehold.co/600x400/fee2e2/c41230?text=${encodeURIComponent(p.name)}`;
+  const el = id => document.getElementById(id);
+  el('pm-img').src = p.image || fallback;
+  el('pm-img').onerror = ()=>{ el('pm-img').src = fallback; };
+  el('pm-name').textContent = p.name;
+  el('pm-badge').textContent = p.category;
+  el('pm-desc').textContent = p.description;
+  el('pm-qty').textContent = '1';
+
+  const isPizza = p.category === 'Pizza';
+  el('pm-size-section').style.display = isPizza ? 'block' : 'none';
+  el('pm-half-section').style.display = isPizza ? 'block' : 'none';
+
+  if(isPizza){
+    renderSizeGrid();
+    resetHalfToggle();
+    buildHalfList();
+  }
+
+  updatePmTotal();
+  el('product-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProductModal(){
+  document.getElementById('product-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function renderSizeGrid(){
+  const grid = document.getElementById('size-grid');
+  grid.innerHTML = PIZZA_SIZES.map(s=>`
+    <div class="size-pill ${s.id===pm_sizeId?'active':''}" onclick="selectSize('${s.id}')">
+      <div style="font-weight:700;font-size:.8125rem;color:var(--text);">${s.label}</div>
+      <div style="font-size:.65rem;color:var(--muted);margin-top:1px;">${s.sub}</div>
+      <div style="font-size:.75rem;font-weight:700;color:var(--red);margin-top:3px;">${fmt(pm_product.price*s.mult)}</div>
+    </div>`).join('');
+}
+
+function selectSize(id){
+  pm_sizeId = id;
+  renderSizeGrid();
+  updatePmTotal();
+}
+
+function resetHalfToggle(){
+  pm_halfOn = false;
+  pm_halfProd = null;
+  const tog = document.getElementById('half-toggle');
+  tog.checked = false;
+  document.getElementById('half-track').style.background = '#DDD';
+  document.getElementById('half-thumb').style.transform = 'translateX(0)';
+  document.getElementById('half-picker').style.display = 'none';
+  document.getElementById('half-selected-name').textContent = '';
+}
+
+function onHalfToggle(){
+  pm_halfOn = document.getElementById('half-toggle').checked;
+  const track = document.getElementById('half-track');
+  const thumb = document.getElementById('half-thumb');
+  const picker = document.getElementById('half-picker');
+  track.style.background = pm_halfOn ? 'var(--red)' : '#DDD';
+  thumb.style.transform = pm_halfOn ? 'translateX(20px)' : 'translateX(0)';
+  picker.style.display = pm_halfOn ? 'block' : 'none';
+  if(!pm_halfOn){ pm_halfProd=null; document.getElementById('half-selected-name').textContent=''; }
+  updatePmTotal();
+}
+
+function buildHalfList(){
+  const pizzas = getProducts().filter(p=>p.category==='Pizza' && p.id!==pm_product.id);
+  document.getElementById('half-list').innerHTML = pizzas.map(p=>{
+    const fallback=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(p.name.charAt(0))}`;
+    return `<div class="half-thumb" id="ht-${p.id}" onclick="selectHalf(${p.id})">
+      <img src="${p.image||fallback}" alt="${esc(p.name)}" style="width:100%;height:60px;object-fit:cover;display:block;" onerror="this.src='${fallback}'"/>
+      <div style="padding:4px 5px;font-size:.6rem;font-weight:600;color:var(--text);line-height:1.2;">${esc(p.name)}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectHalf(id){
+  const p = getProducts().find(x=>x.id===id);
+  pm_halfProd = p || null;
+  document.querySelectorAll('.half-thumb').forEach(el=>el.classList.remove('active'));
+  if(p){ document.getElementById(`ht-${id}`)?.classList.add('active'); }
+  document.getElementById('half-selected-name').textContent = p ? `Metade: ${p.name}` : '';
+  updatePmTotal();
+}
+
+function changePmQty(d){
+  pm_qty = Math.max(1, pm_qty+d);
+  document.getElementById('pm-qty').textContent = pm_qty;
+  updatePmTotal();
+}
+
+function calcPmUnitPrice(){
+  if(!pm_product) return 0;
+  const size = PIZZA_SIZES.find(s=>s.id===pm_sizeId) || PIZZA_SIZES[2];
+  if(pm_product.category !== 'Pizza') return pm_product.price;
+  const basePrice = pm_halfOn && pm_halfProd
+    ? Math.max(pm_product.price, pm_halfProd.price)
+    : pm_product.price;
+  return basePrice * size.mult;
+}
+
+function updatePmTotal(){
+  const unit  = calcPmUnitPrice();
+  const total = unit * pm_qty;
+  document.getElementById('pm-total').textContent = fmt(total);
+}
+
+function addToCartFromModal(){
+  if(!pm_product) return;
+  const size = PIZZA_SIZES.find(s=>s.id===pm_sizeId);
+  const unit = calcPmUnitPrice();
+  const halfName = pm_halfOn && pm_halfProd ? pm_halfProd.name : null;
+  const sizeLabel = pm_product.category==='Pizza' ? size?.label : null;
+
+  const key = `${pm_product.id}_${pm_sizeId}_${pm_halfProd?.id||''}`;
+  const existing = cart.find(c=>c.key===key);
+  if(existing){
+    existing.qty += pm_qty;
+  } else {
+    cart.push({
+      key, id:pm_product.id, name:pm_product.name,
+      sizeLabel, halfName, qty:pm_qty,
+      unitPrice:unit, image:pm_product.image
+    });
+  }
+
+  persistCart();
+  closeProductModal();
+  showToast(`${pm_product.name} adicionado! 🛒`,'success');
+}
+
+// ─────────────────────────────────────────────
+// CART
+// ─────────────────────────────────────────────
+let cart = [];
+
+function loadCart(){ try{ cart=JSON.parse(localStorage.getItem(CART_STORE)||'[]'); }catch(_){ cart=[]; } }
+function persistCart(){ localStorage.setItem(CART_STORE,JSON.stringify(cart)); updateCartBadge(); }
+
+function updateCartBadge(){
+  const count = cart.reduce((s,c)=>s+c.qty,0);
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = count;
+  badge.style.display = count>0 ? 'flex' : 'none';
+}
+
+function openCart(){
+  renderCart();
+  document.getElementById('cart-drawer').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+function closeCart(){
+  document.getElementById('cart-drawer').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function renderCart(){
+  const box   = document.getElementById('cart-items');
+  const total = cart.reduce((s,c)=>s+c.unitPrice*c.qty,0);
+  const count = cart.reduce((s,c)=>s+c.qty,0);
+  document.getElementById('cart-count-label').textContent = `${count} ${count===1?'item':'itens'}`;
+  document.getElementById('cart-subtotal').textContent = fmt(total);
+
+  if(!cart.length){
+    box.innerHTML=`<div style="text-align:center;padding:3rem 1rem;"><div style="font-size:3rem;margin-bottom:.75rem;">🛒</div><p style="font-weight:600;color:var(--muted);">Seu carrinho está vazio</p><p style="font-size:.8rem;color:#C4ABAB;margin-top:4px;">Adicione pizzas deliciosas!</p></div>`;
+    return;
+  }
+
+  box.innerHTML = cart.map((c,i)=>{
+    const fallback=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(c.name.charAt(0))}`;
+    const label = [c.name, c.sizeLabel, c.halfName?`½ ${c.halfName}`:null].filter(Boolean).join(' · ');
+    return `
+      <div style="display:flex;gap:12px;padding:.875rem 0;border-bottom:1px solid var(--border);align-items:center;">
+        <div style="width:56px;height:56px;border-radius:.75rem;overflow:hidden;flex-shrink:0;background:var(--red-lt);">
+          <img src="${c.image||fallback}" alt="${esc(c.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='${fallback}'"/>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p style="font-weight:600;font-size:.8125rem;color:var(--text);line-height:1.3;">${esc(label)}</p>
+          <p style="font-weight:700;font-size:.875rem;color:var(--red);margin-top:2px;">${fmt(c.unitPrice*c.qty)}</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <button class="qty-btn" onclick="changeCartQty(${i},-1)">−</button>
+          <span style="font-weight:700;font-size:.9375rem;min-width:18px;text-align:center;">${c.qty}</span>
+          <button class="qty-btn" onclick="changeCartQty(${i},1)">+</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function changeCartQty(i,d){
+  cart[i].qty += d;
+  if(cart[i].qty<=0) cart.splice(i,1);
+  persistCart();
+  renderCart();
+}
+
+// ─────────────────────────────────────────────
+// CHECKOUT
+// ─────────────────────────────────────────────
+
+function openCheckout(){
+  if(!cart.length){ showToast('Carrinho vazio!','error'); return; }
+  closeCart();
+
+  // fill summary
+  const total = cart.reduce((s,c)=>s+c.unitPrice*c.qty,0);
+  document.getElementById('ck-total').textContent = fmt(total);
+  document.getElementById('ck-summary').innerHTML = cart.map(c=>{
+    const label=[c.name,c.sizeLabel,c.halfName?`½ ${c.halfName}`:null].filter(Boolean).join(' · ');
+    return `<div style="display:flex;justify-content:space-between;gap:8px;font-size:.8rem;"><span style="color:var(--muted);flex:1;">${esc(label)} ×${c.qty}</span><span style="font-weight:600;">${fmt(c.unitPrice*c.qty)}</span></div>`;
+  }).join('');
+
+  const el = document.getElementById('checkout-modal');
+  el.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeCheckout(){
+  document.getElementById('checkout-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function selectPay(){ /* PIX only */ }
+
+document.getElementById('checkout-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const name  = document.getElementById('ck-name').value.trim();
+  const phone = document.getElementById('ck-phone').value.trim();
+  const addr  = document.getElementById('ck-addr').value.trim();
+  if(!name||!phone||!addr){ showToast('Preencha os campos obrigatórios','error'); return; }
+
+  const total   = cart.reduce((s,c)=>s+c.unitPrice*c.qty,0);
+  const orderId = `napoli-${Date.now()}`;
+  closeCheckout();
+
+  await openPixModal(total, orderId);
+});
+
+// ─────────────────────────────────────────────
+// PIX
+// ─────────────────────────────────────────────
+let pixCodeGlobal = '';
+
+async function openPixModal(amount, orderId){
+  // Show modal in loading state immediately
+  const modal = document.getElementById('pix-modal');
+  document.getElementById('pix-amount').textContent = fmt(amount);
+  document.getElementById('pix-qr').src = '';
+  document.getElementById('pix-code-display').textContent = '';
+  document.getElementById('pix-loading').style.display = 'flex';
+  document.getElementById('pix-content').style.display = 'none';
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const res = await fetch('/api/pix', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: parseFloat(amount.toFixed(2)),
+        description: 'Pedido Pizzaria Napoli',
+        order_id: orderId,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.transaction) {
+      throw new Error(data.error || 'Erro ao gerar cobrança');
+    }
+
+    const tx = data.transaction;
+    pixCodeGlobal = tx.pix_copia_cola;
+
+    document.getElementById('pix-qr').src = tx.qr_code_base64;
+    document.getElementById('pix-code-display').textContent = pixCodeGlobal;
+    document.getElementById('pix-loading').style.display = 'none';
+    document.getElementById('pix-content').style.display = 'block';
+
+  } catch (err) {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+    showToast(err.message || 'Erro ao gerar PIX. Tente novamente.', 'error');
+  }
+}
+
+function copyPix(){
+  if(!pixCodeGlobal) return;
+  navigator.clipboard.writeText(pixCodeGlobal).then(()=>{
+    showToast('Código PIX copiado! ✓','success');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=pixCodeGlobal;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Código PIX copiado! ✓','success');
+  });
+}
+
+function confirmPix(){
+  document.getElementById('pix-modal').style.display = 'none';
+  cart=[]; persistCart();
+  showSuccessModal();
+}
+
+function showSuccessModal(){
+  const el = document.getElementById('success-modal');
+  el.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeSuccess(){
+  document.getElementById('success-modal').style.display = 'none';
+  document.body.style.overflow = '';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ─────────────────────────────────────────────
+// VIEW SWITCH
+// ─────────────────────────────────────────────
+function switchView(v){
+  document.getElementById('menu-view').style.display  = v==='menu'  ? 'block' : 'none';
+  document.getElementById('admin-view').style.display = v==='admin' ? 'block' : 'none';
+  if(v==='admin') renderAdminList();
+  else renderMenu();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ─────────────────────────────────────────────
+// ADMIN CRUD
+// ─────────────────────────────────────────────
+function renderAdminList(){
+  const list = document.getElementById('admin-list');
+  const prods = getProducts();
+  if(!prods.length){
+    list.innerHTML=`<div style="text-align:center;padding:3rem 1rem;background:#fff;border-radius:1.1rem;border:2px dashed var(--border);"><span style="font-size:3rem;display:block;margin-bottom:.75rem;">🍕</span><p style="font-weight:600;color:var(--muted);">Nenhum produto cadastrado</p></div>`;
+    return;
+  }
+  list.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">${prods.map(p=>{
+    const price=fmt(p.price);
+    const fallback=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(p.name.charAt(0))}`;
+    const bg=p.category==='Pizza'?'background:#FEE2E2;color:var(--red);':'background:#FEF3C7;color:#92400E;';
+    return `<div style="background:#fff;border-radius:1rem;padding:1rem;display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);box-shadow:0 1px 8px rgba(28,10,10,.04);">
+      <div style="width:52px;height:52px;border-radius:.75rem;overflow:hidden;flex-shrink:0;background:var(--red-lt);">
+        <img src="${p.image||fallback}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='${fallback}'"/>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <span style="font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:9999px;${bg}">${p.category}</span>
+        <p style="font-weight:600;font-size:.875rem;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(p.name)}</p>
+        <p style="font-weight:700;font-size:.85rem;color:var(--red);">${price}</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;">
+        <button onclick="openAdminForm(${p.id})" style="width:36px;height:36px;border-radius:.625rem;border:none;cursor:pointer;background:#EFF6FF;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'">✏️</button>
+        <button onclick="deleteProduct(${p.id})" style="width:36px;height:36px;border-radius:.625rem;border:none;cursor:pointer;background:var(--red-lt);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='#FECACA'" onmouseout="this.style.background='var(--red-lt)'">🗑️</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function openAdminForm(id){
+  const wrap  = document.getElementById('admin-form-wrap');
+  const title = document.getElementById('admin-form-title');
+  wrap.style.display='block';
+  document.getElementById('admin-form').reset();
+  if(id){
+    const p=getProducts().find(x=>x.id===id);
+    if(!p) return;
+    title.textContent='Editar Produto';
+    document.getElementById('af-id').value=p.id;
+    document.getElementById('af-name').value=p.name;
+    document.getElementById('af-desc').value=p.description;
+    document.getElementById('af-price').value=p.price;
+    document.getElementById('af-cat').value=p.category;
+    document.getElementById('af-img').value=p.image||'';
+  } else {
+    title.textContent='Novo Produto';
+    document.getElementById('af-id').value='';
+  }
+  wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function closeAdminForm(){
+  document.getElementById('admin-form-wrap').style.display='none';
+  document.getElementById('admin-form').reset();
+}
+function deleteProduct(id){
+  if(!confirm('Excluir este produto?')) return;
+  saveProducts(getProducts().filter(p=>p.id!==id));
+  renderAdminList();
+  showToast('Produto excluído','error');
+}
+
+document.getElementById('admin-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  const name=document.getElementById('af-name').value.trim();
+  const desc=document.getElementById('af-desc').value.trim();
+  const price=parseFloat(document.getElementById('af-price').value);
+  const cat=document.getElementById('af-cat').value;
+  const img=document.getElementById('af-img').value.trim();
+  const editId=document.getElementById('af-id').value;
+  if(!name||!desc||!cat){ showToast('Preencha os campos obrigatórios','error'); return; }
+  if(!price||price<=0){ showToast('Preço inválido','error'); return; }
+  let prods=getProducts();
+  if(editId){
+    prods=prods.map(p=>p.id===parseInt(editId)?{...p,name,description:desc,price,category:cat,image:img}:p);
+    showToast('Produto atualizado!','success');
+  } else {
+    prods.push({id:nextId(),name,description:desc,price,category:cat,image:img});
+    showToast('Produto adicionado!','success');
+  }
+  saveProducts(prods);
+  closeAdminForm();
+  renderAdminList();
+});
+
+// ─────────────────────────────────────────────
+// CHAT
+// ─────────────────────────────────────────────
+const CHAT_RULES=[
+  {kw:['oi','ola','olá','hello','ei','bom dia','boa tarde','boa noite','tudo bem'],reply:'Olá! 👋 Bem-vindo à Pizzaria Napoli! Posso ajudar com sabores, entrega, horários ou promoções 😊'},
+  {kw:['entrega','prazo','demora','tempo','rapido','rápido','frete'],reply:'Fazemos entrega grátis com prazo médio de até 30 minutos 🚀'},
+  {kw:['pagamento','pagar','pix','cartao','cartão','dinheiro','credito','crédito'],reply:'Aceitamos PIX (confirmação instantânea!), cartão de crédito/débito e dinheiro na entrega 💳'},
+  {kw:['sabores','sabor','pizzas','opcoes','opções','cardapio','cardápio'],reply:'Temos 8 sabores incríveis: Margherita, Calabresa, Frango c/ Catupiry, Portuguesa, Quatro Queijos, Bacon Lovers, Pepperoni e Vegetariana 🍕'},
+  {kw:['horario','horário','abre','fecha','funcionamento'],reply:'Funcionamos todos os dias das 18h às 23h 🕕'},
+  {kw:['promocao','promoção','combo','desconto','oferta'],reply:'Temos combos incríveis! Combo Casal: 2 pizzas + bebida por R$94,90 | Combo Família: 3 pizzas + refri por R$129,90 🍕🔥'},
+  {kw:['obrigado','obrigada','valeu','grato'],reply:'Por nada! 😊 Bom apetite! 🍕'},
+  {kw:['meia','metade','dois sabores','sabores diferentes'],reply:'Sim! Ao clicar em qualquer pizza você pode ativar "Meia a Meia" e escolher dois sabores diferentes 🍕✨'},
+  {kw:['tamanho','broto','media','grande','gg','fatias'],reply:'Nossas pizzas têm 4 tamanhos: Broto (25cm), Média (30cm), Grande (35cm) e GG (40cm). Escolha ao clicar na pizza!'},
+  {kw:['carrinho','pedido','comprar'],reply:'Clique em qualquer pizza, escolha o tamanho e adicione ao carrinho! O ícone 🛒 no topo mostra seus itens 😊'},
+];
+
+let chatOpen=false, chatGreeted=false;
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  const modal=document.getElementById('chat-modal');
+  const open=document.getElementById('fab-open');
+  const close=document.getElementById('fab-close');
+  const dot=document.getElementById('chat-dot');
+  if(chatOpen){
+    modal.style.display='flex';
+    open.style.display='none';
+    close.style.display='block';
+    dot.style.display='none';
+    if(!chatGreeted){ chatGreeted=true; setTimeout(()=>addBubble('bot','Olá! 👋 Sou o assistente da Pizzaria Napoli. Posso ajudar com sabores, pedidos, entrega e muito mais 🍕'),380); }
+    setTimeout(()=>document.getElementById('chat-in').focus(),120);
+  } else {
+    modal.style.display='none';
+    open.style.display='block';
+    close.style.display='none';
+  }
+}
+
+function addBubble(type,text){
+  const box=document.getElementById('chat-msgs');
+  const bot=type==='bot';
+  const time=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  const div=document.createElement('div');
+  div.style.cssText=`display:flex;align-items:flex-end;gap:7px;justify-content:${bot?'flex-start':'flex-end'};animation:slideUp .22s ease forwards;`;
+  div.innerHTML=`
+    ${bot?`<div style="width:26px;height:26px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;margin-bottom:18px;">🍕</div>`:''}
+    <div style="max-width:80%;">
+      <div class="${bot?'bub-bot':'bub-usr'}" style="padding:.55rem .875rem;font-size:.8125rem;line-height:1.55;background:${bot?'#fff':'#DCF8C6'};color:#111B21;box-shadow:0 1px 2px rgba(0,0,0,.08);white-space:pre-line;">${esc(text)}</div>
+      <p style="font-size:.6rem;color:rgba(0,0,0,.38);margin-top:3px;text-align:${bot?'left':'right'};padding:0 4px;">${time}</p>
+    </div>`;
+  box.appendChild(div);
+  box.scrollTop=box.scrollHeight;
+}
+
+function showTyping(){
+  const box=document.getElementById('chat-msgs');
+  const div=document.createElement('div');
+  div.id='typing';
+  div.style.cssText='display:flex;align-items:flex-end;gap:7px;';
+  div.innerHTML=`<div style="width:26px;height:26px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;">🍕</div><div class="bub-bot" style="padding:.75rem 1rem;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.08);display:flex;gap:4px;align-items:center;"><span class="tdot" style="width:7px;height:7px;border-radius:50%;background:#9ca3af;display:inline-block;"></span><span class="tdot" style="width:7px;height:7px;border-radius:50%;background:#9ca3af;display:inline-block;"></span><span class="tdot" style="width:7px;height:7px;border-radius:50%;background:#9ca3af;display:inline-block;"></span></div>`;
+  box.appendChild(div);
+  box.scrollTop=box.scrollHeight;
+}
+
+function norm(s){ return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+
+function getBotReply(msg){
+  const n=norm(msg);
+  for(const r of CHAT_RULES) if(r.kw.some(k=>n.includes(norm(k)))) return r.reply;
+  return 'Posso ajudar com sabores, entrega, horários, pagamento ou promoções 😊 O que gostaria de saber?';
+}
+
+function sendMsg(){
+  const inp=document.getElementById('chat-in');
+  const text=inp.value.trim();
+  if(!text) return;
+  addBubble('user',text);
+  inp.value='';
+  showTyping();
+  setTimeout(()=>{ document.getElementById('typing')?.remove(); addBubble('bot',getBotReply(text)); },650+Math.random()*500);
+}
+
+// ─────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────
+function showToast(msg,type='success'){
+  const box=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className='toast';
+  el.style.cssText=`background:${type==='success'?'#1C0A0A':'#C41230'};color:#fff;padding:.7rem 1rem;border-radius:.875rem;font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.22);pointer-events:auto;`;
+  el.innerHTML=`<span style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;">${type==='success'?'✓':'!'}</span><span>${esc(msg)}</span>`;
+  box.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),280); },2800);
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+(function init(){
+  loadCart();
+  updateCartBadge();
+  renderMenu();
+  initGeo();
+})();
+
+</script>
+</body>
+</html>
