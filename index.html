@@ -403,9 +403,17 @@
         <p id="pm-desc" style="font-size:.875rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem;"></p>
 
         <!-- SIZE SELECTOR (only pizzas) -->
-        <div id="pm-size-section" style="margin-bottom:1.25rem;">
-          <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin-bottom:.625rem;">Tamanho</p>
-          <div id="size-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+        <div id="pm-size-section" style="display:none;margin:0 -1.25rem;">
+          <div style="border-top:8px solid #F7F8FA;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem .5rem;">
+              <div>
+                <p style="font-size:.875rem;font-weight:700;color:#3E3E3E;">Tamanho</p>
+                <p style="font-size:.75rem;color:#717171;margin-top:2px;">Escolha 1 opção</p>
+              </div>
+              <span id="size-badge" style="font-size:.65rem;font-weight:700;padding:.22rem .6rem;border-radius:9999px;background:var(--red);color:#fff;transition:background .2s;">Obrigatório</span>
+            </div>
+            <div id="size-grid" style="border-top:1px solid #F0F0F0;display:grid;grid-template-columns:1fr 1fr;"></div>
+          </div>
         </div>
 
         <!-- FLAVOR SECTION (iFood style, pizzas only) -->
@@ -691,10 +699,10 @@ const STORE = 'napoli_v3';
 const CART_STORE = 'napoli_cart_v3';
 
 const PIZZA_SIZES = [
-  { id:'broto', label:'Broto',  sub:'25cm · 4 fatias', mult:.60 },
-  { id:'media', label:'Média',  sub:'30cm · 6 fatias', mult:.80 },
-  { id:'grande',label:'Grande', sub:'35cm · 8 fatias', mult:1.00 },
-  { id:'gg',    label:'GG',     sub:'40cm · 12 fatias',mult:1.30 },
+  { id:'p',  label:'P',  sub:'25cm · 4 fatias',  mult:.60 },
+  { id:'m',  label:'M',  sub:'30cm · 6 fatias',  mult:.80 },
+  { id:'g',  label:'G',  sub:'35cm · 8 fatias',  mult:1.00 },
+  { id:'gg', label:'GG', sub:'40cm · 12 fatias', mult:1.30 },
 ];
 
 const DEFAULT_PRODUCTS = [
@@ -912,7 +920,7 @@ function filterCat(cat){
 // ─────────────────────────────────────────────
 // PRODUCT MODAL
 // ─────────────────────────────────────────────
-const PIZZA_FLAVORS = [
+const PIZZA_FLAVORS_SALGADAS = [
   { id:'mussarela',          name:'Mussarela',             desc:'Molho especial, mussarela e tomate fatiado' },
   { id:'calabresa',          name:'Calabresa',             desc:'Molho especial, calabresa defumada fatiada, cebola e azeitonas' },
   { id:'calabresa-especial', name:'Calabresa Especial',    desc:'Molho especial, calabresa, cheddar, pimentão e cebola' },
@@ -940,6 +948,21 @@ const PIZZA_FLAVORS = [
   { id:'carne-seca',         name:'Carne Seca',            desc:'Molho especial, carne seca desfiada, catupiry e cebola' },
 ];
 
+const PIZZA_FLAVORS_DOCES = [
+  { id:'brigadeiro-d',      name:'Brigadeiro',             desc:'Chocolate ao leite, granulado crocante e leite condensado' },
+  { id:'nutella-d',         name:'Nutella com Morango',    desc:'Nutella® cremosa com morangos frescos fatiados' },
+  { id:'mm-d',              name:'M&M\'s',                 desc:'Creme de chocolate com M&M\'s coloridos' },
+  { id:'prestigio-d',       name:'Prestígio',              desc:'Chocolate escuro, coco ralado e leite condensado' },
+  { id:'banana-canela-d',   name:'Banana com Canela',      desc:'Banana caramelada, canela em pó e leite condensado' },
+  { id:'romeu-julieta-d',   name:'Romeu e Julieta',        desc:'Goiabada cremosa com queijo minas fresco' },
+  { id:'chocolate-morango-d',name:'Chocolate com Morango', desc:'Creme de chocolate belga e morangos frescos' },
+  { id:'creme-avela-d',     name:'Creme de Avelã',         desc:'Creme de avelã artesanal com granulado crocante' },
+  { id:'leite-ninho-d',     name:'Leite Ninho com Morango',desc:'Creme de leite Ninho® com morangos frescos e granulado' },
+  { id:'kinder-d',          name:'Kinder Bueno',           desc:'Creme de avelã, wafer crocante e chocolate ao leite' },
+];
+
+const ALL_PIZZA_FLAVORS = [...PIZZA_FLAVORS_SALGADAS, ...PIZZA_FLAVORS_DOCES];
+
 const DOCE_FLAVORS = [
   { id:'brigadeiro',    name:'Brigadeiro',          emoji:'🍫' },
   { id:'nutella',       name:'Nutella c/ Morango',   emoji:'🍓' },
@@ -950,7 +973,7 @@ const DOCE_FLAVORS = [
 ];
 
 let pm_product      = null;
-let pm_sizeId       = 'grande';
+let pm_sizeId       = 'g';
 let pm_qty          = 1;
 let pm_flavor1      = null;
 let pm_flavor2      = null;
@@ -961,7 +984,7 @@ function openProductModal(id){
   const p = getProducts().find(x=>x.id===id);
   if(!p) return;
   pm_product      = p;
-  pm_sizeId       = 'grande';
+  pm_sizeId       = 'g';
   pm_qty          = 1;
   pm_flavor1      = null;
   pm_flavor2      = null;
@@ -986,8 +1009,8 @@ function openProductModal(id){
   if(isPizza){
     renderSizeGrid();
     buildFlavorList();
-    el('fl1-badge').textContent = 'Obrigatório';
-    el('fl1-badge').style.background = 'var(--red)';
+    el('fl1-badge').textContent = 'Obrigatório'; el('fl1-badge').style.background = 'var(--red)';
+    el('size-badge').textContent = 'G — selecionado'; el('size-badge').style.background = '#1DAA54';
   }
   if(isCombo13){
     buildComboSection();
@@ -1008,44 +1031,67 @@ function closeProductModal(){
 }
 
 function renderSizeGrid(){
-  const grid = document.getElementById('size-grid');
-  grid.innerHTML = PIZZA_SIZES.map(s=>`
-    <div class="size-pill ${s.id===pm_sizeId?'active':''}" onclick="selectSize('${s.id}')">
-      <div style="font-weight:700;font-size:.8125rem;color:var(--text);">${s.label}</div>
-      <div style="font-size:.65rem;color:var(--muted);margin-top:1px;">${s.sub}</div>
-      <div style="font-size:.75rem;font-weight:700;color:var(--red);margin-top:3px;">${fmt(pm_product.price*s.mult)}</div>
-    </div>`).join('');
+  document.getElementById('size-grid').innerHTML = PIZZA_SIZES.map((s,i)=>{
+    const on = s.id===pm_sizeId;
+    const borderR = i%2===0 ? 'border-right:1px solid #F0F0F0;' : '';
+    const borderB = i<2     ? 'border-bottom:1px solid #F0F0F0;' : '';
+    return `<div onclick="selectSize('${s.id}')" style="${borderR}${borderB}display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;background:${on?'#FFF5F5':'#fff'};transition:background .1s;">
+      <div style="flex:1;min-width:0;">
+        <p style="font-size:1.05rem;font-weight:800;color:${on?'var(--red)':'#3E3E3E'};">${s.label}</p>
+        <p style="font-size:.7rem;color:#717171;margin-top:1px;">${s.sub}</p>
+      </div>
+      <p style="font-size:.875rem;font-weight:700;color:var(--red);white-space:nowrap;margin-right:8px;">${fmt(pm_product.price*s.mult)}</p>
+      <div class="fl-radio${on?' fl-on':''}"></div>
+    </div>`;
+  }).join('');
 }
 
 function selectSize(id){
   pm_sizeId = id;
+  const s = PIZZA_SIZES.find(x=>x.id===id);
+  const badge = document.getElementById('size-badge');
+  badge.textContent = s ? `${s.label} — selecionado` : 'Selecionado';
+  badge.style.background = '#1DAA54';
   renderSizeGrid();
   updatePmTotal();
 }
 
-function buildFlavorList(){
-  const makeRow = (num, f) => {
-    const sel = num===1 ? pm_flavor1 : pm_flavor2;
-    const isOn = sel && sel.id===f.id;
-    return `<div class="flavor-row${isOn?' fl-on':''}" onclick="selectFlavor(${num},'${f.id}')">
+function flavorCategoryHtml(num, label, flavors){
+  if(!flavors.length) return '';
+  const sel = num===1 ? pm_flavor1 : pm_flavor2;
+  const rows = flavors.map(f=>{
+    const on = sel && sel.id===f.id;
+    return `<div class="flavor-row${on?' fl-on':''}" onclick="selectFlavor(${num},'${f.id}')">
       <div style="flex:1;min-width:0;">
         <p style="font-size:.9rem;font-weight:600;color:#3E3E3E;line-height:1.3;">${esc(f.name)}</p>
         <p style="font-size:.775rem;color:#717171;margin-top:3px;line-height:1.4;">${esc(f.desc)}</p>
       </div>
-      <div class="fl-radio${isOn?' fl-on':''}"></div>
+      <div class="fl-radio${on?' fl-on':''}"></div>
     </div>`;
-  };
-  document.getElementById('flavor1-list').innerHTML = PIZZA_FLAVORS.map(f=>makeRow(1,f)).join('');
-  const others = pm_flavor1 ? PIZZA_FLAVORS.filter(f=>f.id!==pm_flavor1.id) : PIZZA_FLAVORS;
-  document.getElementById('flavor2-list').innerHTML = others.map(f=>makeRow(2,f)).join('');
+  }).join('');
+  return `<div style="padding:.45rem 1.25rem .2rem;background:#F7F8FA;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#9E9E9E;border-bottom:1px solid #EFEFEF;">${label}</div>${rows}`;
+}
+
+function buildFlavorList(){
+  const ex1 = pm_flavor1?.id;
+  const ex2 = pm_flavor2?.id;
+  ['flavor1-list','flavor2-list'].forEach((elId, i)=>{
+    const num = i+1;
+    const exclude = num===1 ? ex2 : ex1;
+    const sal = PIZZA_FLAVORS_SALGADAS.filter(f=>f.id!==exclude);
+    const doc = PIZZA_FLAVORS_DOCES.filter(f=>f.id!==exclude);
+    document.getElementById(elId).innerHTML =
+      flavorCategoryHtml(num,'🍕 Salgadas', sal) +
+      flavorCategoryHtml(num,'🍫 Doces', doc);
+  });
 }
 
 function selectFlavor(num, id){
-  const f = PIZZA_FLAVORS.find(x=>x.id===id);
+  const f = ALL_PIZZA_FLAVORS.find(x=>x.id===id);
   if(!f) return;
   if(num===1){
     pm_flavor1 = f;
-    if(pm_flavor2 && pm_flavor2.id===id) pm_flavor2 = null;
+    if(pm_flavor2?.id===id) pm_flavor2 = null;
     const badge = document.getElementById('fl1-badge');
     badge.textContent = '✓ ' + f.name;
     badge.style.background = '#1DAA54';
@@ -1057,7 +1103,7 @@ function selectFlavor(num, id){
 }
 
 function buildComboSection(){
-  document.getElementById('combo-salgada-list').innerHTML = PIZZA_FLAVORS.map(f=>{
+  document.getElementById('combo-salgada-list').innerHTML = PIZZA_FLAVORS_SALGADAS.map(f=>{
     const isOn = pm_comboSalgada===f.id;
     return `<div class="flavor-row${isOn?' fl-on':''}" onclick="selectComboSalgada('${f.id}','${f.name.replace(/'/g,"\\'")}')">
       <div style="flex:1;min-width:0;">
@@ -1125,7 +1171,7 @@ function addToCartFromModal(){
 
   let sizeLabel, halfName, key;
   if(pm_product.id === 13){
-    const salgadaFlavor = PIZZA_FLAVORS.find(f=>f.id===pm_comboSalgada);
+    const salgadaFlavor = PIZZA_FLAVORS_SALGADAS.find(f=>f.id===pm_comboSalgada);
     sizeLabel = salgadaFlavor?.name || null;
     halfName  = pm_comboDoce;
     key = `${pm_product.id}_s${pm_comboSalgada}_d${pm_comboDoce}`;
