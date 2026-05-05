@@ -99,6 +99,44 @@
     .tdot:nth-child(2){animation-delay:.18s;}
     .tdot:nth-child(3){animation-delay:.36s;}
 
+    /* ── Promo banner ── */
+    @keyframes urgentPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,60,60,.55);}70%{box-shadow:0 0 0 10px rgba(255,60,60,0);}}
+    @keyframes timerBlink{0%,100%{opacity:1;}50%{opacity:.5;}}
+    @keyframes badgeBounce{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+    @keyframes promoBannerIn{from{opacity:0;transform:translateY(-14px);}to{opacity:1;transform:translateY(0);}}
+    .promo-banner{
+      animation:promoBannerIn .42s cubic-bezier(.16,1,.3,1) forwards;
+      border-radius:1.25rem;overflow:hidden;
+      background:linear-gradient(135deg,#1A0500 0%,#2E0A00 50%,#1A0500 100%);
+      border:2px solid #C41230;
+      box-shadow:0 6px 32px rgba(196,18,48,.35),0 2px 8px rgba(0,0,0,.4);
+      position:relative;
+    }
+    .promo-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:#C41230;color:#fff;font-size:.65rem;font-weight:800;
+      letter-spacing:.12em;text-transform:uppercase;
+      padding:.3rem .75rem;border-radius:9999px;
+      animation:badgeBounce 1.2s ease-in-out infinite;
+    }
+    .promo-timer{
+      font-size:2.4rem;font-weight:900;font-variant-numeric:tabular-nums;
+      color:#fff;letter-spacing:.05em;line-height:1;
+      text-shadow:0 0 20px rgba(255,80,80,.7);
+    }
+    .promo-timer.urgent{animation:timerBlink .5s ease-in-out infinite;color:#FF4444;}
+    .promo-cta{
+      background:linear-gradient(135deg,#C41230,#8B0D21);
+      color:#fff;font-weight:800;font-size:.9375rem;
+      border:none;border-radius:.875rem;width:100%;
+      padding:.875rem;cursor:pointer;
+      box-shadow:0 4px 18px rgba(196,18,48,.5);
+      transition:transform .12s,box-shadow .12s;
+      animation:urgentPulse 2s ease-in-out infinite;
+    }
+    .promo-cta:hover{transform:scale(1.02);box-shadow:0 6px 24px rgba(196,18,48,.65);}
+    .promo-cta:active{transform:scale(.97);}
+
     /* ── Modals backdrop ── */
     .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);}
 
@@ -684,12 +722,102 @@ function setGeo(city){
 // ─────────────────────────────────────────────
 let activeCat = 'all';
 
+// ─────────────────────────────────────────────
+// PROMO COUNTDOWN TIMER
+// ─────────────────────────────────────────────
+const PROMO_KEY = 'napoli_promo_deadline';
+let _promoInterval = null;
+
+function startPromoTimer(){
+  // Persist deadline across re-renders; reset when expired
+  let deadline = parseInt(sessionStorage.getItem(PROMO_KEY) || '0');
+  if(!deadline || Date.now() >= deadline){
+    deadline = Date.now() + 15 * 60 * 1000;
+    sessionStorage.setItem(PROMO_KEY, deadline);
+  }
+
+  if(_promoInterval) clearInterval(_promoInterval);
+
+  function tick(){
+    const el = document.getElementById('promo-timer');
+    if(!el){ clearInterval(_promoInterval); return; }
+    const remaining = Math.max(0, deadline - Date.now());
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    el.textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+    if(remaining < 60000) el.classList.add('urgent');
+    if(remaining === 0){
+      clearInterval(_promoInterval);
+      const banner = document.getElementById('promo-timer')?.closest?.('.promo-banner');
+      if(banner){
+        const ribbon = banner.querySelector('[style*="background:#C41230"]');
+        if(ribbon) ribbon.style.background = '#555';
+        el.textContent = 'ENCERRADA';
+        el.classList.add('urgent');
+      }
+    }
+  }
+  tick();
+  _promoInterval = setInterval(tick, 1000);
+}
+
 function renderMenu(){
   const box  = document.getElementById('products-container');
   const prods = getProducts();
+  const combo = prods.find(p=>p.id===13);
   const cats  = activeCat === 'all' ? ['Pizza','Combo'] : [activeCat];
   const labels = { Pizza:'🍕 Pizzas', Combo:'🎁 Combos' };
   let html = '';
+
+  // ── Featured promo banner (Combo Napoli Perfeito) ──
+  if(combo && (activeCat==='all' || activeCat==='Combo')){
+    html += `
+      <div class="promo-banner" style="margin-bottom:2rem;">
+        <!-- Urgency ribbon -->
+        <div style="background:#C41230;padding:.45rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <span class="promo-badge">⚡ Oferta Relâmpago</span>
+          <span style="font-size:.7rem;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.05em;">Encerra em:</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span id="promo-timer" class="promo-timer" style="font-size:1.2rem;">15:00</span>
+          </div>
+        </div>
+
+        <!-- Main content -->
+        <div style="display:flex;align-items:stretch;min-height:0;">
+          <!-- Image -->
+          <div style="width:42%;flex-shrink:0;position:relative;overflow:hidden;max-height:200px;">
+            <img src="${combo.image}" alt="${esc(combo.name)}"
+              style="width:100%;height:100%;object-fit:cover;display:block;"/>
+            <div style="position:absolute;inset:0;background:linear-gradient(to right,transparent 60%,rgba(26,5,0,.8));"></div>
+          </div>
+
+          <!-- Text -->
+          <div style="flex:1;padding:1rem 1rem 1rem .875rem;display:flex;flex-direction:column;justify-content:space-between;gap:.625rem;">
+            <div>
+              <p style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#C8872A;margin-bottom:.25rem;">Destaque da noite</p>
+              <h3 class="font-display" style="font-size:1.35rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:.5rem;">${esc(combo.name)}</h3>
+              <ul style="list-style:none;display:flex;flex-direction:column;gap:.2rem;">
+                <li style="font-size:.75rem;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:5px;"><span style="color:#FFD700;font-weight:700;">✓</span> 1 Pizza GG à sua escolha</li>
+                <li style="font-size:.75rem;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:5px;"><span style="color:#FFD700;font-weight:700;">✓</span> 1 Refrigerante Coca-Cola 2L</li>
+                <li style="font-size:.75rem;color:rgba(255,255,255,.85);display:flex;align-items:center;gap:5px;"><span style="color:#FFD700;font-weight:700;">✓</span> 1 Brotinho Doce</li>
+              </ul>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;">
+              <div>
+                <span style="font-size:.6rem;color:rgba(255,255,255,.55);display:block;margin-bottom:.1rem;">tudo isso por apenas</span>
+                <span style="font-size:1.6rem;font-weight:900;color:#FFD700;line-height:1;">R$ 59<span style="font-size:.9rem;">,90</span></span>
+                <span style="display:inline-block;margin-left:6px;font-size:.65rem;font-weight:700;background:#1DAA54;color:#fff;padding:.15rem .45rem;border-radius:9999px;">🛵 Frete grátis</span>
+              </div>
+              <button class="promo-cta" onclick="openProductModal(13)" style="width:auto;padding:.65rem 1rem;font-size:.8125rem;">
+                Pedir agora →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    startPromoTimer();
+  }
 
   for(const cat of cats){
     const items = prods.filter(p=>p.category===cat);
