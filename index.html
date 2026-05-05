@@ -306,6 +306,9 @@
     <div id="products-container"></div>
   </main>
 
+  <!-- ── REVIEWS ── -->
+  <div id="reviews-section" style="max-width:580px;margin:0 auto 8px;"></div>
+
   <footer style="background:#fff;border-top:1px solid #EFEFEF;padding:1.5rem 1rem;text-align:center;max-width:580px;margin:0 auto;">
     <p style="font-size:.8125rem;font-weight:500;color:#717171;">© 2026 Pizzaria Napoli · Feito com ❤️</p>
     <button onclick="switchView('admin')" style="margin-top:.5rem;font-size:.7rem;color:#D0D0D0;background:none;border:none;cursor:pointer;">⚙ Admin</button>
@@ -1639,11 +1642,212 @@ function showToast(msg,type='success'){
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// REVIEWS
+// ─────────────────────────────────────────────
+const REVIEWS = [
+  {name:'Maria S.',      stars:5, days:1,  text:'Que pizza incrível! Massa no ponto, recheio bem generoso e chegou quentinha ainda. Já sou cliente fiel! ❤️'},
+  {name:'João P.',       stars:5, days:1,  text:'Entrega relâmpago, menos de 25 minutos! Pizza deliciosa, massa fininha e crocante. Perfeito!'},
+  {name:'Ana C.',        stars:5, days:1,  text:'Pedi a Portuguesa e me apaixonei. Ingredientes frescos, ovo bem cozido, tudo muito bem distribuído. Voltarei com certeza!'},
+  {name:'Lucas M.',      stars:5, days:2,  text:'Melhor calabresa que já comi! Bem temperada, calabresa de qualidade e chegou no prazo. Nota 10!'},
+  {name:'Fernanda A.',   stars:5, days:2,  text:'Toda a família aprovou! Pedimos 2 pizzas diferentes e as duas chegaram quentinhas e deliciosas. Super recomendo!'},
+  {name:'Rodrigo L.',    stars:5, days:2,  text:'Impressionante como chega quente e no tempo certo. A mussarela é simplesmente perfeita, recheio generoso demais.'},
+  {name:'Camila B.',     stars:5, days:2,  text:'Primeira vez que pedi e não vai ser a última. Pizza gostosa, bem feita e com preço justo. Amei! ❤️'},
+  {name:'Pedro H.',      stars:5, days:2,  text:'Pedi o combo e ficou incrível! Pizza, refrigerante e o brotinho doce chegaram todos em perfeito estado. Vale muito a pena!'},
+  {name:'Juliana R.',    stars:5, days:3,  text:'Que surpresa boa! Nunca pensei que conseguiria uma pizza tão boa por delivery. Massa perfeita e recheio na medida certa.'},
+  {name:'Carlos N.',     stars:5, days:3,  text:'Fiz pedido pra um aniversário e todo mundo ficou impressionado com a qualidade. Parabéns à equipe!'},
+  {name:'Beatriz G.',    stars:5, days:3,  text:'A pizza de frango com catupiry é de outro nível. Catupiry cremoso, frango bem temperado. Vou pedir toda semana!'},
+  {name:'Felipe V.',     stars:5, days:3,  text:'Rápido, saboroso e embalagem boa. Pizza chegou no estado perfeito. Recomendo sem hesitar!'},
+  {name:'Amanda T.',     stars:5, days:3,  text:'Já é a quarta vez que peço e continua a mesma qualidade. Isso é sinal de um negócio bem gerenciado. 👏'},
+  {name:'Rafael D.',     stars:5, days:4,  text:'Pedi a Margherita e amei. Molho de tomate artesanal, mussarela derretida e manjericão fresquinho. Parecia de restaurante!'},
+  {name:'Mariana F.',    stars:5, days:4,  text:'Meus filhos pediram a de calabresa e eu a Portuguesa. As duas nota 10! Entrega dentro do prazo, sem erro.'},
+  {name:'Eduardo C.',    stars:5, days:4,  text:'Pizza quentinha, bem temperada e com ingredientes de qualidade. Melhor pedido que fiz esse mês!'},
+  {name:'Letícia S.',    stars:5, days:4,  text:'Adorei a embalagem também, pizza chegou sem deformar nada. Recheio igualzinho à foto. Nota máxima!'},
+  {name:'Bruno M.',      stars:5, days:4,  text:'Pedido certo em tudo. Sabor, temperatura, tempo de entrega. Não tenho nada a reclamar. Voltarei!'},
+  {name:'Isabela O.',    stars:5, days:5,  text:'A massa é o diferencial desta pizzaria. Fininha, crocante nas bordas e macia no meio. Perfeita! 😋'},
+  {name:'Gustavo P.',    stars:5, days:5,  text:'Pedi de madrugada e ainda assim veio rápida e quentinha. Qualidade nota 10, super indico!'},
+  {name:'Patricia R.',   stars:5, days:5,  text:'Comprei pro meu marido que ama pizza e ele ficou impressionado. Disse que é a melhor que já comeu! 🏆'},
+  {name:'Thiago A.',     stars:5, days:5,  text:'Entrega feita sem complicações. Pizza do jeito que pedi, sem erros. Perfeito!'},
+  {name:'Vanessa L.',    stars:5, days:5,  text:'Calabresa artesanal de verdade! Dá pra sentir a diferença dos ingredientes. Simplesmente maravilhosa.'},
+  {name:'Anderson B.',   stars:5, days:6,  text:'Melhor custo-benefício da região. Pizza boa, preço justo e entrega no prazo. Isso é o que a gente precisa!'},
+  {name:'Rafaela N.',    stars:5, days:6,  text:'Pedi a quatro queijos e quase chorei de emoção kkk. Catupiry, mussarela, prato e parmesão no ponto certo. Nota 10!'},
+  {name:'Leonardo H.',   stars:5, days:6,  text:'Textura da massa incrível. Crocante por fora e levinha por dentro. Recheio farto. Show de pizza! 🍕'},
+  {name:'Carolina V.',   stars:5, days:6,  text:'Pedindo toda sexta agora! A família toda virou fã. Pizza excelente, preço bom e sem atraso.'},
+  {name:'Diego S.',      stars:5, days:7,  text:'Boa noite feita ainda melhor com essa pizza. Sabor marcante, ingredientes de qualidade. Volto mais!'},
+  {name:'Priscila C.',   stars:5, days:7,  text:'Surpresa total! Esperava boa mas veio incrível. Entregador simpático, pizza perfeita. Nota máxima! ⭐⭐⭐⭐⭐'},
+  {name:'Matheus G.',    stars:5, days:7,  text:'Pedi pra dividir com os colegas do trabalho e todo mundo adorou. Já viraram clientes também!'},
+  {name:'Larissa F.',    stars:5, days:7,  text:'Melhor pizza de delivery que já comi. Massa artesanal e ingredientes frescos fazem toda a diferença.'},
+  {name:'Victor M.',     stars:5, days:7,  text:'Pedido sem erro, pizza sem falha. Isso vale muito! Já estou na minha terceira semana seguida pedindo.'},
+  {name:'Simone T.',     stars:5, days:8,  text:'Crianças pediram de bandeja o retorno da calabresa haha. Aprovação total lá em casa!'},
+  {name:'Igor D.',       stars:5, days:8,  text:'Pizza chegou num estado impecável, bem embalada e quentinha. Sabor? Maravilhoso. Ponto final.'},
+  {name:'Andrea B.',     stars:5, days:8,  text:'Primeira pizza que como que tem massa no ponto certo por delivery. Muito bem feita, parabéns!'},
+  {name:'Leandro P.',    stars:5, days:8,  text:'Voltei pra deixar avaliação porque merece. Pedi há 3 dias e ainda estou lembrando do sabor. Incrível!'},
+  {name:'Bruna R.',      stars:5, days:9,  text:'O brotinho doce de brigadeiro é divino! Veio no combo e superou minhas expectativas. Voltarei só pelo brotinho haha 😂'},
+  {name:'Marcelo L.',    stars:5, days:9,  text:'Minha esposa estava com vontade de pizza. Fizemos o pedido e ela ficou feliz demais com o resultado! 👍'},
+  {name:'Natalia A.',    stars:5, days:9,  text:'Pedi a Portuguesa e a Calabresa Especial. As duas impecáveis, não faltou ingrediente. Nota máxima!'},
+  {name:'Alexandre S.',  stars:5, days:9,  text:'Finalmente uma pizzaria de delivery que não decepciona. Tudo muito bem feito e no tempo certo.'},
+  {name:'Sabrina O.',    stars:5, days:10, text:'Massa artesanal que dá pra sentir a diferença. Recheio farto e bem temperado. Amei demais! ❤️'},
+  {name:'Francisco C.',  stars:5, days:10, text:'Pedindo pra família toda. 3 pizzas, todas perfeitas. Isso é consistência de qualidade. Parabéns!'},
+  {name:'Aline V.',      stars:5, days:10, text:'Entrega super pontual e pizza quentinha. Calabresa irresistível, cebola caramelizada no ponto. Humm!'},
+  {name:'Roberto N.',    stars:5, days:10, text:'Comparei com outras pizzarias da cidade e essa é, disparado, a melhor. Qualidade e preço justo.'},
+  {name:'Thaís M.',      stars:5, days:11, text:'Fiz o pedido pelo celular facilmente. Pizza chegou antes do previsto! Sabor excelente. 5 estrelas merecidas!'},
+  {name:'Antônio H.',    stars:5, days:11, text:'Pizza bem montada, ingredientes frescos e quantidade certa. Preço honesto. Já sou cliente frequente!'},
+  {name:'Danielle P.',   stars:5, days:11, text:'Que saudade desse sabor! Estava sem comer pizza boa há tempos. Essa aqui resgatou minha fé! 😂🍕'},
+  {name:'César R.',      stars:5, days:11, text:'Entregador super simpático e pizza no ponto. Tudo como esperado, sem surpresas negativas. Top!'},
+  {name:'Roberta G.',    stars:5, days:12, text:'Pedi a frango com catupiry e tive que segurar pra não comer tudo sozinha. Incrível mesmo!'},
+  {name:'Wilson F.',     stars:5, days:12, text:'Custo-benefício imbatível. Pizza grande, ingredientes de qualidade, preço justo. Recomendo a todos!'},
+  {name:'Fabiana L.',    stars:5, days:12, text:'Recheio farto em todas as fatias, sem aquela parte seca no meio. Pizza bem feita do começo ao fim.'},
+  {name:'Mauro A.',      stars:5, days:12, text:'Pedi à tarde para o jantar e veio fresquinho. Temperatura ideal, sabor perfeito. Nota 10!'},
+  {name:'Jéssica T.',    stars:5, days:13, text:'Já indiquei pra todos meus amigos! Pizzaria que tem orgulho do que faz. Massa e recheio impecáveis.'},
+  {name:'Luiz B.',       stars:5, days:13, text:'Pedi o meia a meia e veio exatamente do jeito que escolhi, sem erro nenhum. Pizza deliciosa e bem caprichada!'},
+  {name:'Claudia S.',    stars:5, days:13, text:'Que delícia! Pizza de pepperoni chegou quentinha, recheio caprichado. Virei fã incondicional!'},
+  {name:'Renato D.',     stars:5, days:13, text:'Massa fina e crocante, molho saboroso e ingredientes frescos. Isso é pizza de verdade!'},
+  {name:'Tatiana C.',    stars:5, days:14, text:'Pedi pra aniversário da minha filha e foi um sucesso! Crianças amaram e adultos também. Obrigada!'},
+  {name:'José M.',       stars:5, days:14, text:'Pizza grande que alimentou a família toda com sobra. Sabor excelente do início ao fim. Voltamos!'},
+  {name:'Luana V.',      stars:5, days:14, text:'Entrega no prazo e pizza mantida quentinha na embalagem. Cuidado com o produto que se vê. Top! ⭐'},
+  {name:'Henrique P.',   stars:5, days:14, text:'Pedi pela terceira vez essa semana. Vício essa pizza! Massa deliciosa, recheio generoso. Nota máxima!'},
+  {name:'Carla R.',      stars:5, days:14, text:'Tão gostoso que meu marido foi buscar a embalagem pra ver o contato da pizzaria haha. Voltaremos!'},
+  {name:'Paulo G.',      stars:5, days:15, text:'Qualidade consistente em todos os pedidos. Isso é o que diferencia essa pizzaria das outras.'},
+  {name:'Débora N.',     stars:5, days:15, text:'Pizza chegou num papelão bem resistente, não amassou nada. Detalhes que importam. Recheio perfeito!'},
+  {name:'Marcos H.',     stars:5, days:15, text:'Melhor Portuguesa que já comi! Ovo bem cozido, ervilha e presunto na medida. 👏👏'},
+  {name:'Viviane S.',    stars:5, days:15, text:'Fiquei com medo de pedir sem indicação, mas me arrisquei. Valeu muito! Pizza nota 10 mesmo!'},
+  {name:'Elaine M.',     stars:5, days:15, text:'Calabresa artesanal com cebola roxa caramelizada? Show! Dá pra sentir o cuidado na preparação.'},
+  {name:'Luiz F.',       stars:5, days:15, text:'Pedido no sábado à noite. Achei que fosse demorar mas veio rapidíssimo. Pizza perfeita! 🍕🔥'},
+  {name:'Alessandra T.', stars:5, days:15, text:'Satisfação total! Pizza quentinha, recheio generoso e entregador pontual. Já é minha pizzaria fixa!'},
+  {name:'Sandra L.',     stars:5, days:15, text:'Amei o cuidado com a embalagem. Pizza chegou sem deformar nada. Sabor igualzinho ao da foto.'},
+  {name:'Mônica B.',     stars:5, days:15, text:'Que surpresa! Pizza muito melhor do que esperava. Vou recomendar pra todo mundo que conheço! 🙌'},
+  {name:'Cátia P.',      stars:5, days:1,  text:'Voltei pra deixar 5 estrelas porque merece muito. Recheio farto, massa no ponto e entrega rápida. 🌟'},
+  {name:'Wanderlei A.',  stars:5, days:3,  text:'Prazo prometido cumprido e pizza do jeito que pedi. Assim que deve ser! Homem de palavra essa pizzaria.'},
+  {name:'Solange R.',    stars:5, days:5,  text:'Pedi a Bela Montanha e me surpreendi com o tomate seco e rúcula fresquinha. Pizza diferente e deliciosa!'},
+  {name:'Miriam C.',     stars:5, days:7,  text:'Toda vez que peço, a qualidade é a mesma. Produto consistente e de verdade. Parabéns à equipe!'},
+  {name:'Renata N.',     stars:5, days:9,  text:'Sabor incomparável! Dá pra perceber que usam ingredientes de qualidade. Pizza de restaurante em casa.'},
+  {name:'Valter G.',     stars:5, days:2,  text:'Fiz o pedido pelo celular em menos de 1 minuto. Pizza chegou em 28 minutos. Tudo certo, muito obrigado!'},
+  {name:'Rita V.',       stars:5, days:4,  text:'Meu filho de 8 anos pediu a calabresa e não parou de falar que era a melhor pizza que já comeu. 😄'},
+  {name:'Luciana F.',    stars:5, days:6,  text:'Pedi o combo e valeu cada centavo! Pizza + refrigerante + brotinho. Uma experiência completa mesmo!'},
+  {name:'Daniel P.',     stars:5, days:8,  text:'Voltei pra dar nota porque essa pizzaria merece! Recheio generoso, massa no ponto e entrega rápida.'},
+  {name:'Elson S.',      stars:5, days:1,  text:'Minha esposa ficou impressionada com a qualidade. Disse que é melhor que muita coisa de restaurante!'},
+  {name:'Gleice M.',     stars:5, days:3,  text:'Pizza de qualidade superior! Ingredientes frescos, recheio bem distribuído. Nota máxima com prazer!'},
+  {name:'Adriana T.',    stars:5, days:5,  text:'Pedindo toda semana! Variando os sabores e todas são maravilhosas. Pizza artesanal de verdade mesmo.'},
+  {name:'Fábio L.',      stars:5, days:7,  text:'Sabor consistente e entrega pontual. Isso é o que a gente precisa! Já indiquei pra família toda.'},
+  {name:'Rosana B.',     stars:5, days:9,  text:'Pedi a Primavera e adorei! Brócolis fresquinho, cenoura e alho frito. Pizza diferente e muito gostosa!'},
+  {name:'Jailson R.',    stars:5, days:11, text:'Atendimento nota 10, pizza nota 10. Estabelecimento que zela pela qualidade. Parabéns à equipe!'},
+  {name:'Keila N.',      stars:5, days:2,  text:'Já pedi 6 vezes! Cada pedido é uma confirmação de que faço escolha certa. Sabor de verdade sempre!'},
+  {name:'Edilson C.',    stars:5, days:4,  text:'Pizza chegou bem quente e bem embalada. Ingredientes de qualidade e massa artesanal. Aprovado! 👌'},
+  {name:'Sônia A.',      stars:5, days:6,  text:'Que orgulho ver uma pizzaria assim! Cuidado com os ingredientes e com o cliente. Top demais!'},
+  {name:'Valdenir P.',   stars:5, days:8,  text:'Fiz o pedido pela primeira vez e fiquei impressionado. Pizza muito melhor do que imaginei! Voltarei.'},
+  {name:'Eliane G.',     stars:5, days:1,  text:'Calabresa e Portuguesa na mesma noite! As duas maravilhosas. Meia a meia foi uma ótima ideia. 😍'},
+  {name:'Genilson M.',   stars:5, days:3,  text:'Quantidade de recheio acima da média. Pizza farta e gostosa. Não deu nem pra sobrar pra depois!'},
+  {name:'Conceição H.',  stars:5, days:5,  text:'Peço pra família toda desde que descobri. 5 pessoas e todos aprovam sempre. Qualidade constante!'},
+  {name:'Aguinaldo F.',  stars:5, days:7,  text:'Pizza chegou quentinha mesmo sendo perto das 22h. Cuidado com o horário de entrega que se nota.'},
+  {name:'Rosilene T.',   stars:5, days:9,  text:'Que pizza maravilhosa! Mussarela derretida, molho saboroso, massa perfeita. Recomendo demais!'},
+  {name:'Cicero B.',     stars:5, days:11, text:'Entregador educado, pizza quentinha e embalagem em ótimas condições. Tudo do jeito que deve ser!'},
+  {name:'Aparecida L.',  stars:5, days:13, text:'Nunca fui fã de pizza de delivery mas essa mudou minha visão. Ingredientes frescos fazem toda a diferença.'},
+  {name:'Josivaldo S.',  stars:5, days:2,  text:'Pedido certinho, sem erro no sabor ou tamanho. Massa artesanal de verdade. Nota máxima sem dúvida!'},
+  {name:'Nedilma R.',    stars:5, days:4,  text:'Pizza de frango com catupiry divina! Catupiry cremoso e frango bem temperadinho. Vício total! 🍕'},
+  {name:'Erivaldo C.',   stars:5, days:6,  text:'Fiz o pedido tarde da noite e ainda assim veio quentinha e gostosa. Qualidade sem desculpa!'},
+  // 4★ com menção de atraso
+  {name:'Kleidiane M.',  stars:4, days:8,  text:'Pizza muito gostosa e ingredientes de qualidade, não tenho do que reclamar quanto ao sabor. Só o tempo de entrega que ficou um pouquinho além do previsto, uns 50 minutos. Mas valeu a espera, com certeza!'},
+  {name:'Adriano P.',    stars:4, days:12, text:'Sabor nota 10, sem qualquer reclamação quanto à qualidade da pizza. A entrega atrasou uns 20 minutinhos em relação ao prazo informado, mas ainda chegou quentinha. Voltarei a pedir!'},
+  {name:'Suiane B.',     stars:4, days:15, text:'Ótima pizza, massa deliciosa e recheio bem temperado. Só tive que aguardar um pouco mais pela entrega do que o estimado. De resto, tudo perfeito. Recomendo!'},
+];
+
+const AVATAR_COLORS = ['#E57373','#F06292','#BA68C8','#7986CB','#4FC3F7','#26C6DA','#4DB6AC','#81C784','#FFD54F','#FF8A65','#A1887F','#90A4AE'];
+
+function avatarColor(name){ return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length]; }
+
+function reviewStarsHtml(n, size){
+  const sz = size || '.9rem';
+  return `<span style="color:#FFB800;font-size:${sz};letter-spacing:.5px;">${'★'.repeat(n)}${'☆'.repeat(5-n)}</span>`;
+}
+
+let _reviewsExpanded = false;
+
+function renderReviewsSection(){
+  const total = REVIEWS.length;
+  const five  = REVIEWS.filter(r=>r.stars===5).length;
+  const four  = REVIEWS.filter(r=>r.stars===4).length;
+  const avg   = (REVIEWS.reduce((s,r)=>s+r.stars,0)/total).toFixed(1);
+  const pct5  = Math.round(five/total*100);
+  const pct4  = Math.round(four/total*100);
+
+  const barRow = (stars,count,pct) => `
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+      <span style="font-size:.72rem;color:#717171;width:8px;text-align:right;">${stars}</span>
+      <span style="color:#FFB800;font-size:.62rem;">★</span>
+      <div style="flex:1;height:4px;background:#F0F0F0;border-radius:2px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:#FFB800;border-radius:2px;transition:width .4s;"></div>
+      </div>
+      <span style="font-size:.7rem;color:#9E9E9E;width:18px;text-align:right;">${count}</span>
+    </div>`;
+
+  const reviewCard = r => {
+    const init = r.name.charAt(0).toUpperCase();
+    const col  = avatarColor(r.name);
+    const day  = r.days===1 ? 'há 1 dia' : `há ${r.days} dias`;
+    return `<div style="padding:1rem 1.25rem;border-bottom:1px solid #F5F5F5;">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:.5rem;">
+        <div style="width:38px;height:38px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;color:#fff;flex-shrink:0;">${init}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.875rem;font-weight:600;color:#3E3E3E;">${esc(r.name)}</div>
+          <div style="display:flex;align-items:center;gap:7px;margin-top:1px;">
+            ${reviewStarsHtml(r.stars,'.8rem')}
+            <span style="font-size:.7rem;color:#9E9E9E;">· ${day}</span>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:.8125rem;color:#3E3E3E;line-height:1.55;padding-left:48px;">${esc(r.text)}</p>
+    </div>`;
+  };
+
+  const visible = _reviewsExpanded ? REVIEWS : REVIEWS.slice(0,5);
+  const remaining = total - 5;
+
+  document.getElementById('reviews-section').innerHTML = `
+    <div style="background:#fff;margin-bottom:8px;">
+      <!-- Header -->
+      <div style="padding:1rem 1.25rem .75rem;border-bottom:1px solid #F0F0F0;display:flex;align-items:center;justify-content:space-between;">
+        <h2 style="font-size:1rem;font-weight:700;color:#3E3E3E;">Avaliações</h2>
+        <span style="font-size:.8rem;color:#717171;">${total} avaliações</span>
+      </div>
+      <!-- Summary -->
+      <div style="padding:1.125rem 1.25rem 1rem;display:flex;align-items:center;gap:1.25rem;border-bottom:1px solid #F0F0F0;">
+        <div style="text-align:center;flex-shrink:0;">
+          <div style="font-size:2.75rem;font-weight:900;color:#3E3E3E;line-height:1;">${avg}</div>
+          <div style="margin-top:4px;">${reviewStarsHtml(5,'.875rem')}</div>
+          <div style="font-size:.68rem;color:#9E9E9E;margin-top:3px;">${total} avaliações</div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          ${barRow(5,five,pct5)}
+          ${barRow(4,four,pct4)}
+          ${barRow(3,0,0)}
+          ${barRow(2,0,0)}
+          ${barRow(1,0,0)}
+        </div>
+      </div>
+      <!-- Reviews list -->
+      <div id="reviews-list">
+        ${visible.map(reviewCard).join('')}
+      </div>
+      ${!_reviewsExpanded ? `
+      <div style="padding:.875rem 1.25rem;text-align:center;border-top:1px solid #F5F5F5;">
+        <button onclick="expandReviews()" style="background:none;border:1.5px solid var(--red);color:var(--red);font-weight:700;font-size:.8125rem;border-radius:9999px;padding:.55rem 1.5rem;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='var(--red)';this.style.color='#fff'" onmouseout="this.style.background='none';this.style.color='var(--red)'">
+          Ver mais ${remaining} avaliações
+        </button>
+      </div>` : ''}
+    </div>`;
+}
+
+function expandReviews(){
+  _reviewsExpanded = true;
+  renderReviewsSection();
+}
+
 (function init(){
   loadCart();
   updateCartBadge();
   updateCartQuickBar();
   renderMenu();
+  renderReviewsSection();
   initGeo();
 })();
 
