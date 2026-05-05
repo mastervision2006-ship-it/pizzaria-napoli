@@ -3,94 +3,163 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Admin — Pizzaria Napoli</title>
+  <title>Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root{
-      --red:#C41230; --red-dk:#8B0D21; --red-lt:#FEE2E2;
-      --gold:#C8872A; --cream:#FFF8F0; --text:#1C0A0A;
-      --muted:#856060; --border:#EEE0D8; --green:#1DAA54;
+      --red:#C41230;--red-dk:#8B0D21;--red-lt:#FEE2E2;
+      --gold:#C8872A;--cream:#FFF8F0;--text:#1C0A0A;
+      --muted:#6B7280;--border:#E5E7EB;--green:#1DAA54;
+      --bg:#F3F4F6;--card:#fff;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     html{scroll-behavior:smooth;}
-    body{font-family:'DM Sans',sans-serif;background:#F7F1EE;color:#1C0A0A;min-height:100vh;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
     .font-display{font-family:'Cormorant Garamond',serif;}
 
     @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-    @keyframes slideUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
     @keyframes toastIn{from{opacity:0;transform:translateY(-10px) scale(.95);}to{opacity:1;transform:none;}}
     @keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateY(-8px) scale(.95);}}
-    @keyframes spin{to{transform:rotate(360deg);}}
 
     .toast{animation:toastIn .28s cubic-bezier(.16,1,.3,1) forwards;}
     .toast.out{animation:toastOut .25s ease forwards;}
 
+    /* ── Inputs ── */
     .inp{
-      width:100%;border:1.5px solid var(--border);border-radius:.75rem;
-      padding:.7rem 1rem;font-size:.875rem;font-family:'DM Sans',sans-serif;
-      background:#FFFAF7;color:var(--text);outline:none;
+      width:100%;border:1.5px solid var(--border);border-radius:.625rem;
+      padding:.65rem .875rem;font-size:.875rem;font-family:'DM Sans',sans-serif;
+      background:#fff;color:var(--text);outline:none;
       transition:border-color .15s,box-shadow .15s;
     }
     .inp:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(196,18,48,.1);}
-    .btn-red{
-      background:var(--red);color:#fff;font-weight:700;border:none;
-      cursor:pointer;border-radius:1rem;transition:background .15s,transform .12s;
-    }
-    .btn-red:hover{background:var(--red-dk);}
-    .btn-red:active{transform:scale(.96);}
-    .btn-ghost{
-      background:#F0E8E0;color:var(--muted);font-weight:600;border:none;
-      cursor:pointer;border-radius:1rem;transition:background .15s;
-    }
-    .btn-ghost:hover{background:#E8DDD4;}
+    .inp[type="color"]{padding:.25rem .35rem;height:42px;cursor:pointer;}
+    textarea.inp{resize:vertical;min-height:68px;}
 
-    /* ── Login page ── */
-    #login-view{
-      min-height:100vh;display:flex;align-items:center;justify-content:center;
-      padding:1.5rem;animation:fadeIn .3s ease;
-    }
-    .login-card{
-      background:#fff;border-radius:1.75rem;width:100%;max-width:380px;
-      box-shadow:0 8px 40px rgba(28,10,10,.12);overflow:hidden;
-      animation:slideUp .4s cubic-bezier(.16,1,.3,1);
-    }
-    .login-header{
-      background:var(--red);padding:2rem 1.75rem 1.5rem;text-align:center;
-    }
+    /* ── Buttons ── */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:'DM Sans',sans-serif;font-weight:600;border:none;cursor:pointer;border-radius:.625rem;transition:all .15s;}
+    .btn-primary{background:var(--red);color:#fff;padding:.65rem 1.25rem;font-size:.875rem;}
+    .btn-primary:hover{background:var(--red-dk);}
+    .btn-primary:active{transform:scale(.97);}
+    .btn-secondary{background:#fff;color:var(--text);border:1.5px solid var(--border);padding:.6rem 1.125rem;font-size:.875rem;}
+    .btn-secondary:hover{border-color:#9CA3AF;background:#F9FAFB;}
+    .btn-danger{background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA;padding:.6rem 1.125rem;font-size:.875rem;}
+    .btn-danger:hover{background:#FEE2E2;}
+    .btn-ghost{background:transparent;color:var(--muted);padding:.5rem .75rem;font-size:.8rem;}
+    .btn-ghost:hover{color:var(--text);}
+    .btn-icon{width:36px;height:36px;border-radius:.5rem;border:1.5px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .btn-icon:hover{border-color:var(--red);color:var(--red);}
+    .btn-icon.danger:hover{border-color:#DC2626;color:#DC2626;background:#FEF2F2;}
+
+    /* ── Card ── */
+    .card{background:var(--card);border-radius:1rem;border:1px solid var(--border);overflow:hidden;}
+    .card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .card-body{padding:1.25rem;}
+    .card-footer{padding:.875rem 1.25rem;border-top:1px solid var(--border);background:#F9FAFB;display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+
+    /* ── Login ── */
+    #login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;animation:fadeIn .3s ease;}
+    .login-card{background:#fff;border-radius:1.5rem;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.12);animation:slideUp .4s cubic-bezier(.16,1,.3,1);overflow:hidden;}
+    .login-header{background:var(--red);padding:2rem 1.75rem 1.5rem;text-align:center;}
     .login-body{padding:1.75rem;}
-    .login-error{
-      background:#FEE2E2;color:var(--red);font-size:.8rem;font-weight:600;
-      border-radius:.625rem;padding:.6rem 1rem;margin-bottom:1rem;display:none;
-    }
+    .login-error{background:#FEF2F2;color:#DC2626;font-size:.8rem;font-weight:600;border-radius:.5rem;padding:.6rem 1rem;margin-bottom:1rem;display:none;border:1px solid #FECACA;}
 
-    /* ── Admin panel ── */
-    #admin-panel{min-height:100vh;animation:fadeIn .3s ease;}
-    #toasts{position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+    /* ── Admin shell ── */
+    #admin-shell{display:none;min-height:100vh;animation:fadeIn .25s ease;}
+
+    /* ── Top bar ── */
+    .topbar{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.05);}
+    .topbar-inner{max-width:860px;margin:0 auto;padding:.875rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .brand-pill{display:flex;align-items:center;gap:10px;}
+    .brand-avatar{width:34px;height:34px;border-radius:.5rem;overflow:hidden;border:1.5px solid var(--border);flex-shrink:0;}
+    .brand-avatar img{width:100%;height:100%;object-fit:cover;}
+
+    /* ── Tab nav ── */
+    .tab-nav{background:#fff;border-bottom:1px solid var(--border);}
+    .tab-nav-inner{max-width:860px;margin:0 auto;display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 1.25rem;}
+    .tab-nav-inner::-webkit-scrollbar{display:none;}
+    .tab-btn{padding:.875rem 1rem;font-size:.8125rem;font-weight:600;cursor:pointer;border:none;border-bottom:2.5px solid transparent;background:transparent;color:var(--muted);white-space:nowrap;transition:color .15s,border-color .15s;display:flex;align-items:center;gap:6px;}
+    .tab-btn.on{color:var(--red);border-bottom-color:var(--red);}
+
+    /* ── Main ── */
+    .main{max-width:860px;margin:0 auto;padding:1.5rem 1.25rem 6rem;}
+
+    /* ── Tab panels ── */
+    .tab-panel{display:none;animation:slideUp .3s cubic-bezier(.16,1,.3,1);}
+    .tab-panel.on{display:block;}
+
+    /* ── Field groups ── */
+    .field-group{display:flex;flex-direction:column;gap:6px;}
+    .field-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+    .field-hint{font-size:.72rem;color:#9CA3AF;margin-top:2px;}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    @media(max-width:520px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+    /* ── Product list ── */
+    .prod-item{background:#fff;border-radius:.875rem;padding:.875rem 1rem;display:flex;align-items:center;gap:12px;border:1px solid var(--border);transition:box-shadow .15s;}
+    .prod-item:hover{box-shadow:0 2px 12px rgba(0,0,0,.07);}
+    .prod-thumb{width:50px;height:50px;border-radius:.625rem;overflow:hidden;flex-shrink:0;background:var(--red-lt);}
+    .prod-thumb img{width:100%;height:100%;object-fit:cover;}
+    .cat-badge{font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:9999px;}
+
+    /* ── Preview panel ── */
+    .preview-phone{width:220px;border-radius:1.5rem;overflow:hidden;border:6px solid #1C1C1E;box-shadow:0 20px 50px rgba(0,0,0,.3);flex-shrink:0;background:#F7F8FA;position:sticky;top:90px;max-height:calc(100vh - 110px);overflow-y:auto;scrollbar-width:none;}
+    .preview-phone::-webkit-scrollbar{display:none;}
+    @media(max-width:700px){.preview-phone{display:none;}}
+    .preview-wrap{display:flex;gap:1.5rem;align-items:flex-start;}
+    .preview-content{flex:1;min-width:0;}
+
+    /* ── Color swatch ── */
+    .color-row{display:flex;align-items:center;gap:10px;}
+    .swatch{width:38px;height:38px;border-radius:.5rem;border:1.5px solid var(--border);flex-shrink:0;}
+
+    /* ── Image preview ── */
+    .img-preview{width:100%;height:110px;border-radius:.625rem;object-fit:cover;border:1.5px solid var(--border);background:#F3F4F6;}
+    .logo-preview{width:68px;height:68px;border-radius:.875rem;object-fit:cover;border:1.5px solid var(--border);background:#F3F4F6;}
+
+    /* ── Danger zone ── */
+    .danger-zone{border:1.5px solid #FECACA;border-radius:.875rem;padding:1.25rem;background:#FEF2F2;}
+    .danger-zone h4{color:#DC2626;font-size:.875rem;font-weight:700;margin-bottom:.5rem;}
+    .danger-zone p{font-size:.8rem;color:#6B7280;margin-bottom:1rem;line-height:1.5;}
+
+    /* ── Section heading ── */
+    .section-heading{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.875rem;margin-top:1.5rem;}
+    .section-heading:first-child{margin-top:0;}
+
+    /* ── Form inline ── */
+    .form-stack{display:flex;flex-direction:column;gap:1.125rem;}
+
+    /* ── Pill badge (status) ── */
+    .status-pill{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:600;padding:.25rem .625rem;border-radius:9999px;}
+    .status-pill.green{background:#D1FAE5;color:#065F46;}
+    .status-pill.red{background:var(--red-lt);color:var(--red);}
   </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN VIEW ═══ -->
+<!-- ═══ LOGIN ═══ -->
 <div id="login-view">
   <div class="login-card">
     <div class="login-header">
-      <div class="font-display" style="font-size:1.75rem;font-weight:900;color:#fff;letter-spacing:.01em;">🍕 Napoli</div>
-      <p style="font-size:.8rem;color:rgba(255,255,255,.75);margin-top:4px;">Painel Administrativo</p>
+      <div class="font-display" style="font-size:1.875rem;font-weight:900;color:#fff;letter-spacing:.01em;">🍕</div>
+      <p style="font-size:1rem;font-weight:700;color:#fff;margin-top:4px;" id="login-brand-name">Painel Admin</p>
+      <p style="font-size:.75rem;color:rgba(255,255,255,.65);margin-top:2px;">Acesso restrito</p>
     </div>
     <div class="login-body">
       <div id="login-error" class="login-error">Usuário ou senha incorretos.</div>
-      <div style="display:flex;flex-direction:column;gap:14px;">
-        <div>
-          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Usuário</label>
-          <input id="login-user" class="inp" type="text" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="field-group">
+          <label class="field-label">Usuário</label>
+          <input id="login-user" class="inp" type="text" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()"/>
         </div>
-        <div>
-          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Senha</label>
+        <div class="field-group">
+          <label class="field-label">Senha</label>
           <input id="login-pass" class="inp" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
         </div>
-        <button onclick="doLogin()" class="btn-red" style="width:100%;padding:.875rem;font-size:.9375rem;margin-top:4px;">
+        <button onclick="doLogin()" class="btn btn-primary" style="width:100%;padding:.875rem;font-size:.9375rem;border-radius:.75rem;margin-top:4px;">
           Entrar
         </button>
       </div>
@@ -98,99 +167,451 @@
   </div>
 </div>
 
-<!-- ═══ ADMIN PANEL ═══ -->
-<div id="admin-panel" style="display:none;">
+<!-- ═══ ADMIN SHELL ═══ -->
+<div id="admin-shell">
 
-  <!-- Sticky header -->
-  <div style="position:sticky;top:0;z-index:40;background:#fff;border-bottom:1.5px solid var(--border);box-shadow:0 1px 8px rgba(28,10,10,.06);">
-    <div style="max-width:680px;margin:0 auto;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <a href="/" style="text-decoration:none;">
-          <button class="btn-red" style="padding:.4rem .875rem;font-size:.8125rem;border-radius:9999px;display:flex;align-items:center;gap:5px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 19l-7-7 7-7"/></svg> Cardápio
-          </button>
-        </a>
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-pill">
+        <div class="brand-avatar">
+          <img id="topbar-logo" src="" alt="Logo" onerror="this.style.display='none'"/>
+        </div>
         <div>
-          <h2 class="font-display" style="font-size:1.4rem;font-weight:700;line-height:1.1;">Painel Admin</h2>
-          <p style="font-size:.7rem;color:var(--muted);">Gerencie o cardápio</p>
+          <p id="topbar-name" style="font-size:.875rem;font-weight:700;line-height:1.2;"></p>
+          <p style="font-size:.7rem;color:var(--muted);">Painel Administrativo</p>
         </div>
       </div>
-      <button onclick="doLogout()" style="padding:.4rem .875rem;font-size:.8125rem;border-radius:9999px;border:1.5px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;transition:all .15s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-        Sair
+      <div style="display:flex;align-items:center;gap:8px;">
+        <a href="/" target="_blank" style="text-decoration:none;">
+          <button class="btn btn-secondary" style="padding:.5rem .875rem;font-size:.8rem;gap:5px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Ver Cardápio
+          </button>
+        </a>
+        <button onclick="doLogout()" class="btn btn-ghost" style="font-size:.8rem;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Sair
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab nav -->
+  <div class="tab-nav">
+    <div class="tab-nav-inner">
+      <button class="tab-btn on" onclick="switchTab('produtos')" id="tab-btn-produtos">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Produtos
+      </button>
+      <button class="tab-btn" onclick="switchTab('aparencia')" id="tab-btn-aparencia">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8l-4 8 4-2 4 2-4-8z"/></svg>
+        Aparência
+      </button>
+      <button class="tab-btn" onclick="switchTab('loja')" id="tab-btn-loja">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Loja
+      </button>
+      <button class="tab-btn" onclick="switchTab('avancado')" id="tab-btn-avancado">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M20 12h2M2 12h2"/></svg>
+        Avançado
       </button>
     </div>
   </div>
 
-  <main style="max-width:680px;margin:0 auto;padding:1.5rem 1rem 5rem;">
+  <div class="main">
 
-    <button onclick="openAdminForm(null)" class="btn-red" style="width:100%;padding:.875rem;font-size:.875rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(196,18,48,.28);">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16m8-8H4"/></svg>
-      Adicionar Produto
-    </button>
+    <!-- ══════════════ TAB: PRODUTOS ══════════════ -->
+    <div id="panel-produtos" class="tab-panel on">
 
-    <!-- Form -->
-    <div id="admin-form-wrap" style="display:none;background:#fff;border-radius:1.25rem;overflow:hidden;border:1.5px solid var(--border);margin-bottom:1.25rem;box-shadow:0 4px 24px rgba(28,10,10,.07);">
-      <div style="background:var(--red);padding:1rem 1.25rem;">
-        <h3 id="admin-form-title" style="font-weight:700;color:#fff;font-size:1rem;">Novo Produto</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px;">
+        <div>
+          <h2 style="font-size:1.1rem;font-weight:700;">Cardápio</h2>
+          <p style="font-size:.8rem;color:var(--muted);margin-top:2px;" id="prod-count-label">— produtos</p>
+        </div>
+        <button onclick="openProductForm(null)" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16m8-8H4"/></svg>
+          Novo Produto
+        </button>
       </div>
-      <form id="admin-form" style="padding:1.25rem;display:flex;flex-direction:column;gap:14px;">
-        <input type="hidden" id="af-id"/>
-        <div>
-          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Nome *</label>
-          <input id="af-name" class="inp" type="text" placeholder="Ex: Pizza Margherita"/>
-        </div>
-        <div>
-          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Descrição *</label>
-          <textarea id="af-desc" class="inp" rows="2" placeholder="Ingredientes..." style="resize:none;"></textarea>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div>
-            <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Preço (R$) *</label>
-            <input id="af-price" class="inp" type="number" step="0.01" min="0.01" placeholder="49.90"/>
+
+      <!-- Product form -->
+      <div id="prod-form-wrap" style="display:none;margin-bottom:1.25rem;">
+        <div class="card">
+          <div class="card-header" style="background:var(--red);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <h3 id="prod-form-title" style="font-weight:700;color:#fff;font-size:.9375rem;"></h3>
           </div>
-          <div>
-            <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">Categoria *</label>
-            <select id="af-cat" class="inp" style="appearance:none;">
-              <option value="">Selecione...</option>
-              <option value="Pizza">🍕 Pizza</option>
-              <option value="Combo">🎁 Combo</option>
-            </select>
+          <div class="card-body">
+            <form id="prod-form" class="form-stack">
+              <input type="hidden" id="af-id"/>
+              <div class="grid-2">
+                <div class="field-group">
+                  <label class="field-label">Nome *</label>
+                  <input id="af-name" class="inp" type="text" placeholder="Ex: Pizza Margherita"/>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Categoria *</label>
+                  <select id="af-cat" class="inp" style="appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;">
+                    <option value="">Selecione...</option>
+                    <option value="Pizza">🍕 Pizza</option>
+                    <option value="Combo">🎁 Combo</option>
+                    <option value="Bebida">🥤 Bebida</option>
+                    <option value="Sobremesa">🍰 Sobremesa</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Descrição *</label>
+                <textarea id="af-desc" class="inp" placeholder="Ingredientes e detalhes..."></textarea>
+              </div>
+              <div class="grid-2">
+                <div class="field-group">
+                  <label class="field-label">Preço (R$) *</label>
+                  <input id="af-price" class="inp" type="number" step="0.01" min="0.01" placeholder="49.90"/>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Desconto (%)</label>
+                  <input id="af-discount" class="inp" type="number" step="1" min="0" max="80" placeholder="20"/>
+                  <span class="field-hint">Exibe preço original riscado</span>
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label">URL da Imagem</label>
+                <input id="af-img" class="inp" type="url" placeholder="https://..." oninput="previewProductImg(this.value)"/>
+                <img id="af-img-preview" src="" alt="preview" style="display:none;width:80px;height:80px;border-radius:.625rem;object-fit:cover;margin-top:8px;border:1.5px solid var(--border);"/>
+              </div>
+              <div class="field-group">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                  <input type="checkbox" id="af-featured" style="width:16px;height:16px;accent-color:var(--red);"/>
+                  <span style="font-size:.875rem;font-weight:500;">Produto em destaque</span>
+                </label>
+                <span class="field-hint">Exibe na seção "Destaque" do cardápio</span>
+              </div>
+            </form>
+          </div>
+          <div class="card-footer">
+            <button type="button" onclick="closeProductForm()" class="btn btn-secondary">Cancelar</button>
+            <button type="button" onclick="submitProductForm()" class="btn btn-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Salvar Produto
+            </button>
           </div>
         </div>
-        <div>
-          <label style="display:block;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:6px;">URL da Imagem</label>
-          <input id="af-img" class="inp" type="url" placeholder="https://..."/>
-        </div>
-        <div style="display:flex;gap:10px;padding-top:4px;">
-          <button type="submit" class="btn-red" style="flex:1;padding:.8rem;font-size:.875rem;">Salvar</button>
-          <button type="button" onclick="closeAdminForm()" class="btn-ghost" style="padding:.8rem 1.25rem;font-size:.875rem;">Cancelar</button>
-        </div>
-      </form>
+      </div>
+
+      <!-- Product list -->
+      <div id="prod-list" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
 
-    <div id="admin-list"></div>
-  </main>
-</div>
+    <!-- ══════════════ TAB: APARÊNCIA ══════════════ -->
+    <div id="panel-aparencia" class="tab-panel">
+      <div class="preview-wrap">
+        <div class="preview-content">
+
+          <p class="section-heading">Identidade Visual</p>
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-body form-stack">
+
+              <div class="field-group">
+                <label class="field-label">Cor Principal</label>
+                <div class="color-row">
+                  <input type="color" id="ap-color" class="inp" style="width:80px;flex-shrink:0;" oninput="onColorChange(this.value)"/>
+                  <input type="text" id="ap-color-hex" class="inp" placeholder="#C41230" maxlength="7" oninput="onColorHexChange(this.value)"/>
+                  <div id="ap-color-swatch" class="swatch"></div>
+                </div>
+                <span class="field-hint">Afeta botões, destaques, links e indicadores em todo o cardápio</span>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Logo da Loja</label>
+                <input id="ap-logo" class="inp" type="url" placeholder="https://..." oninput="onLogoChange(this.value)"/>
+                <img id="ap-logo-preview" class="logo-preview" src="" alt="Logo preview" style="margin-top:8px;"/>
+                <span class="field-hint">Aparece no card da restaurante. Recomendado: 200×200px, JPG/PNG</span>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label">Banner / Capa</label>
+                <input id="ap-banner" class="inp" type="url" placeholder="https://..." oninput="onBannerChange(this.value)"/>
+                <img id="ap-banner-preview" class="img-preview" src="" alt="Banner preview" style="margin-top:8px;"/>
+                <span class="field-hint">Imagem de topo do cardápio. Recomendado: 1200×400px</span>
+              </div>
+
+            </div>
+            <div class="card-footer">
+              <button onclick="saveAparencia()" class="btn btn-primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Salvar Aparência
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Mini phone preview -->
+        <div class="preview-phone" id="phone-preview">
+          <img id="pv-banner" src="" alt="" style="width:100%;height:80px;object-fit:cover;display:block;"/>
+          <div style="padding:.75rem .75rem .5rem;background:#fff;border-bottom:1px solid #F0F0F0;">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <img id="pv-logo" src="" alt="" style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:1.5px solid #EEE;flex-shrink:0;"/>
+              <div>
+                <p id="pv-name" style="font-size:.72rem;font-weight:700;color:#3E3E3E;line-height:1.2;"></p>
+                <p style="font-size:.6rem;color:#717171;">⭐ 4.9 · Italiana</p>
+              </div>
+            </div>
+            <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
+              <span id="pv-pill" style="font-size:.6rem;font-weight:600;color:#717171;">Até 30 min</span>
+              <span style="color:#CCC;font-size:.6rem;">|</span>
+              <span style="font-size:.6rem;font-weight:600;color:#717171;">💚 Frete grátis</span>
+            </div>
+          </div>
+          <div style="padding:.5rem .75rem;background:#fff;">
+            <div id="pv-btn" style="background:var(--red);border-radius:.5rem;padding:.4rem .75rem;color:#fff;font-size:.62rem;font-weight:700;text-align:center;">Ver Cardápio →</div>
+          </div>
+          <div style="padding:.375rem .75rem;background:#F7F8FA;border-top:1px solid #EFEFEF;">
+            <p style="font-size:.6rem;font-weight:700;color:#3E3E3E;margin-bottom:.375rem;">🍕 Pizzas</p>
+            <div style="background:#fff;border-radius:.5rem;padding:.5rem;display:flex;gap:6px;align-items:center;border:1px solid #F0F0F0;">
+              <div style="width:34px;height:34px;border-radius:6px;background:#FEE2E2;flex-shrink:0;"></div>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:.6rem;font-weight:600;color:#3E3E3E;">Margherita</div>
+                <div id="pv-price" style="font-size:.62rem;font-weight:700;color:var(--red);">R$ 42,90</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ TAB: LOJA ══════════════ -->
+    <div id="panel-loja" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <h3 style="font-weight:700;font-size:.9375rem;">Informações da Loja</h3>
+        </div>
+        <div class="card-body form-stack">
+
+          <p class="section-heading" style="margin-top:0;">Identidade</p>
+          <div class="grid-2">
+            <div class="field-group">
+              <label class="field-label">Nome da Loja *</label>
+              <input id="lj-name" class="inp" type="text" placeholder="Pizzaria Napoli"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Tipo de Culinária</label>
+              <input id="lj-tagline" class="inp" type="text" placeholder="Italiana"/>
+            </div>
+          </div>
+
+          <p class="section-heading">Avaliações (exibição)</p>
+          <div class="grid-2">
+            <div class="field-group">
+              <label class="field-label">Nota Média</label>
+              <input id="lj-rating" class="inp" type="text" placeholder="4.9" maxlength="4"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Total de Avaliações</label>
+              <input id="lj-reviews" class="inp" type="number" min="0" placeholder="103"/>
+            </div>
+          </div>
+
+          <p class="section-heading">Entrega</p>
+          <div class="grid-3">
+            <div class="field-group">
+              <label class="field-label">Tempo de Entrega</label>
+              <input id="lj-delivery-time" class="inp" type="text" placeholder="Até 30 min"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Taxa de Entrega</label>
+              <input id="lj-delivery-fee" class="inp" type="text" placeholder="Grátis"/>
+              <span class="field-hint">"Grátis" exibe emoji 💚</span>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Pedido Mínimo (R$)</label>
+              <input id="lj-min-order" class="inp" type="number" step="0.01" min="0" placeholder="20.00"/>
+            </div>
+          </div>
+
+          <p class="section-heading">Funcionamento</p>
+          <div class="grid-2">
+            <div class="field-group">
+              <label class="field-label">Horário Exibido</label>
+              <input id="lj-hours" class="inp" type="text" placeholder="Aberto agora · Fecha às 23h"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">WhatsApp (com DDI)</label>
+              <input id="lj-whatsapp" class="inp" type="tel" placeholder="5511999999999"/>
+              <span class="field-hint">Apenas números. Ex: 5511987654321</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="card-footer">
+          <button onclick="saveLoja()" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar Informações
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ TAB: AVANÇADO ══════════════ -->
+    <div id="panel-avancado" class="tab-panel">
+
+      <p class="section-heading">Segurança</p>
+      <div class="card" style="margin-bottom:1rem;">
+        <div class="card-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <h3 style="font-weight:700;font-size:.9375rem;">Alterar Credenciais</h3>
+        </div>
+        <div class="card-body form-stack">
+          <div class="grid-2">
+            <div class="field-group">
+              <label class="field-label">Novo Usuário</label>
+              <input id="adv-new-user" class="inp" type="text" placeholder="admin" autocomplete="off"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Nova Senha</label>
+              <input id="adv-new-pass" class="inp" type="password" placeholder="••••••••" autocomplete="new-password"/>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Confirmar Senha</label>
+            <input id="adv-confirm-pass" class="inp" type="password" placeholder="••••••••" autocomplete="new-password"/>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button onclick="saveCredentials()" class="btn btn-primary">Atualizar Credenciais</button>
+        </div>
+      </div>
+
+      <p class="section-heading">Backup &amp; Portabilidade</p>
+      <div class="card" style="margin-bottom:1rem;">
+        <div class="card-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <h3 style="font-weight:700;font-size:.9375rem;">Exportar / Importar</h3>
+        </div>
+        <div class="card-body">
+          <p style="font-size:.8125rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;">Exporte todas as configurações (marca, produtos, cores) para replicar em outro estabelecimento ou fazer backup.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button onclick="exportConfig()" class="btn btn-secondary">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Exportar JSON
+            </button>
+            <label class="btn btn-secondary" style="cursor:pointer;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Importar JSON
+              <input type="file" accept=".json" id="import-file" style="display:none;" onchange="importConfig(event)"/>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <p class="section-heading">Zona de Perigo</p>
+      <div class="danger-zone">
+        <h4>⚠️ Redefinir Cardápio</h4>
+        <p>Remove todos os produtos customizados e restaura o cardápio padrão de fábrica. Esta ação não pode ser desfeita.</p>
+        <button onclick="resetProducts()" class="btn btn-danger">Redefinir Produtos</button>
+        <h4 style="margin-top:1.25rem;">⚠️ Redefinir Configurações</h4>
+        <p>Remove todas as configurações de marca (nome, cores, logo, banner) e volta ao padrão.</p>
+        <button onclick="resetBrand()" class="btn btn-danger">Redefinir Marca</button>
+      </div>
+
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /admin-shell -->
 
 <!-- Toast container -->
 <div id="toasts" style="position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:320px;"></div>
 
 <script>
-// ─── Auth ───
-const AUTH_KEY = 'napoli_admin_auth';
+// ════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════
+const STORE       = 'napoli_v3';
+const BRAND_STORE = 'napoli_brand_v1';
+const AUTH_KEY    = 'napoli_admin_auth';
+const CREDS_KEY   = 'napoli_admin_creds';
 
+const DEFAULT_BRAND = {
+  name:'Pizzaria Napoli', tagline:'Italiana', rating:'4.9', reviewCount:'103',
+  logo:'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=200&fit=crop&auto=format&q=80',
+  banner:'https://i.ibb.co/mFBcfs84/Chat-GPT-Image-5-de-mai-de-2026-16-09-59.png',
+  colorPrimary:'#C41230',
+  whatsapp:'5511999999999',
+  minOrder:20.00,
+  deliveryTime:'Até 30 min',
+  deliveryFee:'Grátis',
+  openHours:'Aberto agora · Fecha às 23h',
+};
+
+const DEFAULT_PRODUCTS = [
+  { id:1,  category:'Pizza', name:'Margherita',          price:42.90, discount:20, description:'Molho de tomate artesanal, muçarela fior di latte, manjericão fresco e azeite extravirgem.',           image:'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&fit=crop&auto=format&q=80' },
+  { id:2,  category:'Pizza', name:'Calabresa',           price:44.90, discount:18, description:'Calabresa artesanal fatiada, cebola roxa caramelizada, muçarela e orégano fresco.',                   image:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&fit=crop&auto=format&q=80' },
+  { id:3,  category:'Pizza', name:'Frango com Catupiry', price:47.90, discount:22, description:'Peito de frango grelhado desfiado, catupiry original cremoso e milho verde.',                          image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&fit=crop&auto=format&q=80' },
+  { id:4,  category:'Pizza', name:'Portuguesa',          price:49.90, discount:17, description:'Presunto cozido, ovos, azeitona preta, cebola, pimentão colorido e muçarela.',                        image:'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&fit=crop&auto=format&q=80' },
+  { id:5,  category:'Pizza', name:'Quatro Queijos',      price:51.90, discount:25, description:'Muçarela, gorgonzola, parmesão ralado na hora e provolone sobre massa de fermentação natural.',       image:'https://images.unsplash.com/photo-1548369937-47519962c11a?w=600&fit=crop&auto=format&q=80' },
+  { id:6,  category:'Pizza', name:'Bacon Lovers',        price:53.90, discount:23, description:'Double bacon crocante, cheddar especial, muçarela e molho barbecue artesanal.',                       image:'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&fit=crop&auto=format&q=80' },
+  { id:7,  category:'Pizza', name:'Pepperoni',           price:49.90, discount:19, description:'Generosas fatias de pepperoni importado, muçarela especial e orégano italiano.',                      image:'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&fit=crop&auto=format&q=80' },
+  { id:8,  category:'Pizza', name:'Vegetariana',         price:45.90, discount:15, description:'Abobrinha, pimentão colorido, tomate cereja, berinjela, azeitona e muçarela.',                        image:'https://images.unsplash.com/photo-1506354666786-959d6d497f1a?w=600&fit=crop&auto=format&q=80' },
+  { id:9,  category:'Combo', name:'Pizza + Refrigerante Lata',    price:52.90, discount:20, description:'Qualquer pizza + 1 refrigerante lata 350ml à sua escolha.', image:'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=600&fit=crop&auto=format&q=80' },
+  { id:10, category:'Combo', name:'2 Pizzas + Refrigerante 2L',  price:89.90, discount:25, description:'Escolha 2 pizzas + 1 refrigerante 2L. Ideal para o casal!',  image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&fit=crop&auto=format&q=80' },
+  { id:11, category:'Combo', name:'Combo Família',                price:129.90,discount:30, description:'3 pizzas à escolha + 1 refrigerante 2L. Reunião perfeita!',  image:'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&fit=crop&auto=format&q=80' },
+  { id:12, category:'Combo', name:'Combo Casal',                  price:94.90, discount:28, description:'2 pizzas + 1 bebida especial. O jantar dos sonhos!',          image:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&fit=crop&auto=format&q=80' },
+  { id:13, category:'Combo', name:'Combo Napoli Perfeito',        price:59.90, discount:27, featured:true, description:'1 Pizza GG + 1 Refrigerante Coca-Cola 2L + 1 Brotinho Doce. Frete grátis! Entrega em até 30 min.', image:'https://i.ibb.co/NcKr2rG/524728ac-7eff-48c8-ac26-7614be4d8943.png' },
+];
+
+// ════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════
+function fmt(n){ return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(n); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg, type='success'){
+  const box=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className='toast';
+  const bg = type==='success'?'#1C0A0A':type==='error'?'#DC2626':'#2563EB';
+  const icon = type==='success'?'✓':type==='error'?'!':'i';
+  el.style.cssText=`background:${bg};color:#fff;padding:.65rem 1rem;border-radius:.75rem;font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.22);pointer-events:auto;`;
+  el.innerHTML=`<span style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;">${icon}</span><span>${esc(msg)}</span>`;
+  box.appendChild(el);
+  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),280); },2800);
+}
+
+// ════════════════════════════════════════
+// STORAGE
+// ════════════════════════════════════════
+function getProducts(){
+  try{ const r=localStorage.getItem(STORE); if(r) return JSON.parse(r); }catch(_){}
+  return DEFAULT_PRODUCTS.map(p=>({...p}));
+}
+function saveProducts(l){ localStorage.setItem(STORE,JSON.stringify(l)); }
+function nextId(){ const l=getProducts(); return l.length?Math.max(...l.map(p=>p.id))+1:1; }
+
+function getBrand(){ try{ const r=localStorage.getItem(BRAND_STORE); if(r) return{...DEFAULT_BRAND,...JSON.parse(r)}; }catch(_){} return{...DEFAULT_BRAND}; }
+function saveBrand(data){ localStorage.setItem(BRAND_STORE,JSON.stringify(data)); }
+
+function getCreds(){ try{ const r=localStorage.getItem(CREDS_KEY); if(r) return JSON.parse(r); }catch(_){} return{user:'admin',pass:'admin123'}; }
+function saveCreds(c){ localStorage.setItem(CREDS_KEY,JSON.stringify(c)); }
+
+// ════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════
 function checkAuth(){
-  if(sessionStorage.getItem(AUTH_KEY)==='ok'){
-    showPanel();
-  }
+  // Sync login panel brand name
+  const b=getBrand();
+  document.getElementById('login-brand-name').textContent=b.name;
+  if(sessionStorage.getItem(AUTH_KEY)==='ok') showPanel();
 }
 
 function doLogin(){
-  const user = (document.getElementById('login-user').value||'').trim();
-  const pass = (document.getElementById('login-pass').value||'').trim();
-  const err  = document.getElementById('login-error');
-  if(user==='admin' && pass==='admin123'){
+  const user=(document.getElementById('login-user').value||'').trim();
+  const pass=(document.getElementById('login-pass').value||'').trim();
+  const err=document.getElementById('login-error');
+  const creds=getCreds();
+  if(user===creds.user && pass===creds.pass){
     err.style.display='none';
     sessionStorage.setItem(AUTH_KEY,'ok');
     showPanel();
@@ -203,7 +624,7 @@ function doLogin(){
 
 function doLogout(){
   sessionStorage.removeItem(AUTH_KEY);
-  document.getElementById('admin-panel').style.display='none';
+  document.getElementById('admin-shell').style.display='none';
   document.getElementById('login-view').style.display='flex';
   document.getElementById('login-user').value='';
   document.getElementById('login-pass').value='';
@@ -211,117 +632,331 @@ function doLogout(){
 
 function showPanel(){
   document.getElementById('login-view').style.display='none';
-  document.getElementById('admin-panel').style.display='block';
-  renderAdminList();
+  document.getElementById('admin-shell').style.display='block';
+  applyBrandToAdmin();
+  renderProductList();
+  populateAparencia();
+  populateLoja();
 }
 
-// ─── Shared utils ───
-const STORE = 'napoli_v3';
-function getProducts(){
-  try{ const r=localStorage.getItem(STORE); if(r) return JSON.parse(r); }catch(_){}
-  return [];
-}
-function saveProducts(l){ localStorage.setItem(STORE,JSON.stringify(l)); }
-function nextId(){ const l=getProducts(); return l.length?Math.max(...l.map(p=>p.id))+1:1; }
-function fmt(n){ return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(n); }
-function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function showToast(msg, type='success'){
-  const box = document.getElementById('toasts');
-  const el  = document.createElement('div');
-  el.className = 'toast';
-  el.style.cssText=`background:${type==='success'?'#1C0A0A':'#C41230'};color:#fff;padding:.7rem 1rem;border-radius:.875rem;font-size:.8125rem;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.22);pointer-events:auto;`;
-  el.innerHTML=`<span style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;flex-shrink:0;">${type==='success'?'✓':'!'}</span><span>${esc(msg)}</span>`;
-  box.appendChild(el);
-  setTimeout(()=>{ el.classList.add('out'); setTimeout(()=>el.remove(),280); },2800);
+// ════════════════════════════════════════
+// BRAND → ADMIN UI
+// ════════════════════════════════════════
+function applyBrandToAdmin(){
+  const b=getBrand();
+  document.getElementById('topbar-logo').src=b.logo;
+  document.getElementById('topbar-name').textContent=b.name;
+  document.title=`Admin — ${b.name}`;
+  // Apply CSS var override for admin color consistency
+  const s=document.createElement('style');
+  s.textContent=`:root{--red:${b.colorPrimary};}`;
+  document.head.appendChild(s);
 }
 
-// ─── Admin CRUD ───
-function renderAdminList(){
-  const list  = document.getElementById('admin-list');
-  const prods = getProducts();
+// ════════════════════════════════════════
+// TAB NAVIGATION
+// ════════════════════════════════════════
+function switchTab(tab){
+  ['produtos','aparencia','loja','avancado'].forEach(t=>{
+    document.getElementById(`panel-${t}`).classList.toggle('on',t===tab);
+    document.getElementById(`tab-btn-${t}`).classList.toggle('on',t===tab);
+  });
+}
+
+// ════════════════════════════════════════
+// TAB: PRODUTOS
+// ════════════════════════════════════════
+function renderProductList(){
+  const prods=getProducts();
+  const list=document.getElementById('prod-list');
+  document.getElementById('prod-count-label').textContent=`${prods.length} produto${prods.length!==1?'s':''}`;
+
   if(!prods.length){
-    list.innerHTML=`<div style="text-align:center;padding:3rem 1rem;background:#fff;border-radius:1.1rem;border:2px dashed var(--border);"><span style="font-size:3rem;display:block;margin-bottom:.75rem;">🍕</span><p style="font-weight:600;color:var(--muted);">Nenhum produto cadastrado</p><p style="font-size:.8rem;color:var(--muted);margin-top:.5rem;">Produtos do cardápio principal aparecem aqui após o primeiro acesso do cliente.</p></div>`;
+    list.innerHTML=`<div style="text-align:center;padding:3rem 1rem;background:#fff;border-radius:1rem;border:2px dashed var(--border);">
+      <span style="font-size:3rem;display:block;margin-bottom:.75rem;">🍕</span>
+      <p style="font-weight:600;color:var(--muted);">Nenhum produto cadastrado</p>
+    </div>`;
     return;
   }
-  list.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px;">${prods.map(p=>{
-    const fallback=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(p.name.charAt(0))}`;
-    const bg=p.category==='Pizza'?'background:#FEE2E2;color:var(--red);':'background:#FEF3C7;color:#92400E;';
-    return `<div style="background:#fff;border-radius:1rem;padding:1rem;display:flex;align-items:center;gap:12px;border:1.5px solid var(--border);box-shadow:0 1px 8px rgba(28,10,10,.04);">
-      <div style="width:52px;height:52px;border-radius:.75rem;overflow:hidden;flex-shrink:0;background:var(--red-lt);">
-        <img src="${p.image||fallback}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='${fallback}'"/>
-      </div>
+
+  const catColors={Pizza:'background:#FEE2E2;color:#C41230;',Combo:'background:#FEF3C7;color:#92400E;',Bebida:'background:#DBEAFE;color:#1D4ED8;',Sobremesa:'background:#FCE7F3;color:#9D174D;'};
+
+  list.innerHTML=prods.map(p=>{
+    const fallback=`https://placehold.co/50x50/FEE2E2/C41230?text=${encodeURIComponent(p.name.charAt(0))}`;
+    const bg=catColors[p.category]||'background:#F3F4F6;color:#374151;';
+    const disc=p.discount?`<span style="font-size:.65rem;font-weight:700;background:#D1FAE5;color:#065F46;padding:1px 5px;border-radius:4px;margin-left:4px;">-${p.discount}%</span>`:'';
+    const feat=p.featured?`<span style="font-size:.65rem;font-weight:700;background:#FEF3C7;color:#92400E;padding:1px 5px;border-radius:4px;margin-left:4px;">Destaque</span>`:'';
+    return `<div class="prod-item">
+      <div class="prod-thumb"><img src="${p.image||fallback}" alt="${esc(p.name)}" onerror="this.src='${fallback}'"/></div>
       <div style="flex:1;min-width:0;">
-        <span style="font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:9999px;${bg}">${p.category}</span>
-        <p style="font-weight:600;font-size:.875rem;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(p.name)}</p>
-        <p style="font-weight:700;font-size:.85rem;color:var(--red);">${fmt(p.price)}</p>
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;flex-wrap:wrap;">
+          <span class="cat-badge" style="${bg}">${p.category}</span>${feat}
+        </div>
+        <p style="font-weight:600;font-size:.875rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(p.name)}</p>
+        <p style="font-size:.82rem;color:var(--red);font-weight:700;">${fmt(p.price)}${disc}</p>
       </div>
-      <div style="display:flex;gap:8px;flex-shrink:0;">
-        <button onclick="openAdminForm(${p.id})" style="width:36px;height:36px;border-radius:.625rem;border:none;cursor:pointer;background:#EFF6FF;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='#DBEAFE'" onmouseout="this.style.background='#EFF6FF'">✏️</button>
-        <button onclick="deleteProduct(${p.id})" style="width:36px;height:36px;border-radius:.625rem;border:none;cursor:pointer;background:var(--red-lt);font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='#FECACA'" onmouseout="this.style.background='var(--red-lt)'">🗑️</button>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button class="btn-icon" onclick="openProductForm(${p.id})" title="Editar">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </button>
+        <button class="btn-icon danger" onclick="deleteProduct(${p.id})" title="Excluir">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
       </div>
     </div>`;
-  }).join('')}</div>`;
+  }).join('');
 }
 
-function openAdminForm(id){
-  const wrap  = document.getElementById('admin-form-wrap');
-  const title = document.getElementById('admin-form-title');
+function openProductForm(id){
+  const wrap=document.getElementById('prod-form-wrap');
   wrap.style.display='block';
-  document.getElementById('admin-form').reset();
+  document.getElementById('prod-form').reset();
+  document.getElementById('af-img-preview').style.display='none';
+
   if(id){
     const p=getProducts().find(x=>x.id===id);
     if(!p) return;
-    title.textContent='Editar Produto';
+    document.getElementById('prod-form-title').textContent='Editar Produto';
     document.getElementById('af-id').value=p.id;
     document.getElementById('af-name').value=p.name;
-    document.getElementById('af-desc').value=p.description;
+    document.getElementById('af-desc').value=p.description||'';
     document.getElementById('af-price').value=p.price;
     document.getElementById('af-cat').value=p.category;
     document.getElementById('af-img').value=p.image||'';
+    document.getElementById('af-discount').value=p.discount||'';
+    document.getElementById('af-featured').checked=!!p.featured;
+    if(p.image){ previewProductImg(p.image); }
   } else {
-    title.textContent='Novo Produto';
+    document.getElementById('prod-form-title').textContent='Novo Produto';
     document.getElementById('af-id').value='';
   }
   wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function closeAdminForm(){
-  document.getElementById('admin-form-wrap').style.display='none';
-  document.getElementById('admin-form').reset();
+function closeProductForm(){
+  document.getElementById('prod-form-wrap').style.display='none';
+  document.getElementById('prod-form').reset();
+  document.getElementById('af-img-preview').style.display='none';
+}
+
+function previewProductImg(url){
+  const el=document.getElementById('af-img-preview');
+  if(url){ el.src=url; el.style.display='block'; }
+  else { el.style.display='none'; }
+}
+
+function submitProductForm(){
+  const name=document.getElementById('af-name').value.trim();
+  const desc=document.getElementById('af-desc').value.trim();
+  const price=parseFloat(document.getElementById('af-price').value);
+  const cat=document.getElementById('af-cat').value;
+  const img=document.getElementById('af-img').value.trim();
+  const disc=parseInt(document.getElementById('af-discount').value)||0;
+  const featured=document.getElementById('af-featured').checked;
+  const editId=document.getElementById('af-id').value;
+
+  if(!name||!desc||!cat){ showToast('Preencha os campos obrigatórios','error'); return; }
+  if(!price||price<=0){ showToast('Preço inválido','error'); return; }
+
+  let prods=getProducts();
+  if(editId){
+    prods=prods.map(p=>p.id===parseInt(editId)?{...p,name,description:desc,price,category:cat,image:img,discount:disc||undefined,featured:featured||undefined}:p);
+    showToast('Produto atualizado!');
+  } else {
+    prods.push({id:nextId(),name,description:desc,price,category:cat,image:img,discount:disc||undefined,featured:featured||undefined});
+    showToast('Produto adicionado!');
+  }
+  saveProducts(prods);
+  closeProductForm();
+  renderProductList();
 }
 
 function deleteProduct(id){
   if(!confirm('Excluir este produto?')) return;
   saveProducts(getProducts().filter(p=>p.id!==id));
-  renderAdminList();
+  renderProductList();
   showToast('Produto excluído','error');
 }
 
-document.getElementById('admin-form').addEventListener('submit',function(e){
-  e.preventDefault();
-  const name  = document.getElementById('af-name').value.trim();
-  const desc  = document.getElementById('af-desc').value.trim();
-  const price = parseFloat(document.getElementById('af-price').value);
-  const cat   = document.getElementById('af-cat').value;
-  const img   = document.getElementById('af-img').value.trim();
-  const editId= document.getElementById('af-id').value;
-  if(!name||!desc||!cat){ showToast('Preencha os campos obrigatórios','error'); return; }
-  if(!price||price<=0)  { showToast('Preço inválido','error'); return; }
-  let prods = getProducts();
-  if(editId){
-    prods = prods.map(p=>p.id===parseInt(editId)?{...p,name,description:desc,price,category:cat,image:img}:p);
-    showToast('Produto atualizado!','success');
-  } else {
-    prods.push({id:nextId(),name,description:desc,price,category:cat,image:img});
-    showToast('Produto adicionado!','success');
-  }
-  saveProducts(prods);
-  closeAdminForm();
-  renderAdminList();
-});
+// ════════════════════════════════════════
+// TAB: APARÊNCIA
+// ════════════════════════════════════════
+function populateAparencia(){
+  const b=getBrand();
+  document.getElementById('ap-color').value=b.colorPrimary;
+  document.getElementById('ap-color-hex').value=b.colorPrimary;
+  document.getElementById('ap-color-swatch').style.background=b.colorPrimary;
+  document.getElementById('ap-logo').value=b.logo;
+  document.getElementById('ap-logo-preview').src=b.logo;
+  document.getElementById('ap-banner').value=b.banner;
+  document.getElementById('ap-banner-preview').src=b.banner;
+  syncPhonePreview();
+}
 
-// ─── Init ───
+function onColorChange(val){
+  document.getElementById('ap-color-hex').value=val;
+  document.getElementById('ap-color-swatch').style.background=val;
+  syncPhonePreview();
+}
+
+function onColorHexChange(val){
+  if(/^#[0-9A-Fa-f]{6}$/.test(val)){
+    document.getElementById('ap-color').value=val;
+    document.getElementById('ap-color-swatch').style.background=val;
+    syncPhonePreview();
+  }
+}
+
+function onLogoChange(url){
+  document.getElementById('ap-logo-preview').src=url||'';
+  document.getElementById('pv-logo').src=url||'';
+  document.getElementById('topbar-logo').src=url||'';
+}
+
+function onBannerChange(url){
+  document.getElementById('ap-banner-preview').src=url||'';
+  document.getElementById('pv-banner').src=url||'';
+}
+
+function syncPhonePreview(){
+  const b=getBrand();
+  const name=document.getElementById('lj-name')?.value||b.name;
+  const color=document.getElementById('ap-color')?.value||b.colorPrimary;
+  const logo=document.getElementById('ap-logo')?.value||b.logo;
+  const banner=document.getElementById('ap-banner')?.value||b.banner;
+  document.getElementById('pv-name').textContent=name||b.name;
+  document.getElementById('pv-logo').src=logo;
+  document.getElementById('pv-banner').src=banner;
+  document.getElementById('pv-btn').style.background=color;
+  document.getElementById('pv-price').style.color=color;
+}
+
+function saveAparencia(){
+  const color=(document.getElementById('ap-color-hex').value||'').trim();
+  if(!/^#[0-9A-Fa-f]{6}$/.test(color)){ showToast('Cor inválida (use #RRGGBB)','error'); return; }
+  const b=getBrand();
+  b.colorPrimary=color;
+  b.logo=document.getElementById('ap-logo').value.trim()||b.logo;
+  b.banner=document.getElementById('ap-banner').value.trim()||b.banner;
+  saveBrand(b);
+  showToast('Aparência salva! Atualize o cardápio para ver.');
+}
+
+// ════════════════════════════════════════
+// TAB: LOJA
+// ════════════════════════════════════════
+function populateLoja(){
+  const b=getBrand();
+  document.getElementById('lj-name').value=b.name;
+  document.getElementById('lj-tagline').value=b.tagline;
+  document.getElementById('lj-rating').value=b.rating;
+  document.getElementById('lj-reviews').value=b.reviewCount;
+  document.getElementById('lj-delivery-time').value=b.deliveryTime;
+  document.getElementById('lj-delivery-fee').value=b.deliveryFee;
+  document.getElementById('lj-min-order').value=b.minOrder;
+  document.getElementById('lj-hours').value=b.openHours;
+  document.getElementById('lj-whatsapp').value=b.whatsapp||'';
+}
+
+function saveLoja(){
+  const b=getBrand();
+  const name=document.getElementById('lj-name').value.trim();
+  if(!name){ showToast('Nome da loja é obrigatório','error'); return; }
+  b.name=name;
+  b.tagline=document.getElementById('lj-tagline').value.trim()||b.tagline;
+  b.rating=document.getElementById('lj-rating').value.trim()||b.rating;
+  b.reviewCount=document.getElementById('lj-reviews').value||b.reviewCount;
+  b.deliveryTime=document.getElementById('lj-delivery-time').value.trim()||b.deliveryTime;
+  b.deliveryFee=document.getElementById('lj-delivery-fee').value.trim()||b.deliveryFee;
+  const minOrd=parseFloat(document.getElementById('lj-min-order').value);
+  if(!isNaN(minOrd)) b.minOrder=minOrd;
+  b.openHours=document.getElementById('lj-hours').value.trim()||b.openHours;
+  b.whatsapp=document.getElementById('lj-whatsapp').value.replace(/\D/g,'')||b.whatsapp;
+  saveBrand(b);
+  // sync topbar
+  document.getElementById('topbar-name').textContent=b.name;
+  document.title=`Admin — ${b.name}`;
+  syncPhonePreview();
+  showToast('Informações da loja salvas!');
+}
+
+// ════════════════════════════════════════
+// TAB: AVANÇADO
+// ════════════════════════════════════════
+function saveCredentials(){
+  const user=document.getElementById('adv-new-user').value.trim();
+  const pass=document.getElementById('adv-new-pass').value.trim();
+  const conf=document.getElementById('adv-confirm-pass').value.trim();
+  if(!user||!pass){ showToast('Preencha usuário e senha','error'); return; }
+  if(pass!==conf){ showToast('As senhas não coincidem','error'); return; }
+  if(pass.length<6){ showToast('Senha deve ter ao menos 6 caracteres','error'); return; }
+  saveCreds({user,pass});
+  document.getElementById('adv-new-user').value='';
+  document.getElementById('adv-new-pass').value='';
+  document.getElementById('adv-confirm-pass').value='';
+  showToast('Credenciais atualizadas!');
+}
+
+function exportConfig(){
+  const config={
+    brand:getBrand(),
+    products:getProducts(),
+    exportedAt:new Date().toISOString(),
+    version:'1.0'
+  };
+  const blob=new Blob([JSON.stringify(config,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const name=(getBrand().name||'cardapio').replace(/\s+/g,'-').toLowerCase();
+  a.href=url;
+  a.download=`${name}-config-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Configuração exportada!');
+}
+
+function importConfig(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const config=JSON.parse(ev.target.result);
+      if(config.brand){
+        saveBrand({...DEFAULT_BRAND,...config.brand});
+      }
+      if(config.products&&Array.isArray(config.products)&&config.products.length){
+        saveProducts(config.products);
+      }
+      showPanel(); // refresh all tabs
+      showToast(`Configuração importada com sucesso!`);
+    }catch(_){
+      showToast('Arquivo inválido ou corrompido','error');
+    }
+    e.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+function resetProducts(){
+  if(!confirm('Redefinir todos os produtos para o padrão? Isso apagará qualquer customização.')) return;
+  saveProducts(DEFAULT_PRODUCTS.map(p=>({...p})));
+  renderProductList();
+  showToast('Produtos redefinidos!','error');
+}
+
+function resetBrand(){
+  if(!confirm('Redefinir marca para o padrão? Nome, cores, logo e banner serão restaurados.')) return;
+  localStorage.removeItem(BRAND_STORE);
+  populateAparencia();
+  populateLoja();
+  applyBrandToAdmin();
+  showToast('Marca redefinida!','error');
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
 checkAuth();
 </script>
 </body>
