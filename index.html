@@ -197,6 +197,27 @@
       font-size:.75rem;font-weight:500;color:#717171;
     }
 
+    /* ── Flavor picker (iFood style) ── */
+    .flavor-row{
+      display:flex;align-items:center;gap:12px;
+      padding:14px 16px;cursor:pointer;
+      border-bottom:1px solid #F5F5F5;
+      transition:background .1s;
+    }
+    .flavor-row:last-child{border-bottom:none;}
+    .flavor-row:hover{background:#FAFAFA;}
+    .flavor-row.fl-on{background:#FFF5F5;}
+    .fl-radio{
+      width:22px;height:22px;border-radius:50%;
+      border:2px solid #D0D0D0;flex-shrink:0;
+      position:relative;transition:border-color .15s;
+      margin-left:auto;
+    }
+    .fl-radio.fl-on{border-color:var(--red);}
+    .fl-radio.fl-on::after{
+      content:'';position:absolute;inset:3px;
+      border-radius:50%;background:var(--red);
+    }
     /* ── PIX QR ── */
     #pix-qr{image-rendering:pixelated;}
   </style>
@@ -387,25 +408,29 @@
           <div id="size-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
         </div>
 
-        <!-- MEIA A MEIA (only pizzas) -->
-        <div id="pm-half-section" style="margin-bottom:1.25rem;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
-            <div>
-              <p style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);">Meia a Meia</p>
-              <p style="font-size:.7rem;color:var(--muted);margin-top:1px;">Adicione um segundo sabor</p>
+        <!-- FLAVOR SECTION (iFood style, pizzas only) -->
+        <div id="pm-flavor-section" style="display:none;margin:0 -1.25rem 1rem;">
+          <!-- Primary flavor — Required -->
+          <div style="border-top:8px solid #F7F8FA;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem .5rem;">
+              <div>
+                <p style="font-size:.875rem;font-weight:700;color:#3E3E3E;">Qual o sabor?</p>
+                <p style="font-size:.75rem;color:#717171;margin-top:2px;">Escolha 1 opção</p>
+              </div>
+              <span id="fl1-badge" style="font-size:.65rem;font-weight:700;padding:.22rem .6rem;border-radius:9999px;background:var(--red);color:#fff;transition:background .2s;">Obrigatório</span>
             </div>
-            <!-- Toggle -->
-            <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
-              <input type="checkbox" id="half-toggle" onchange="onHalfToggle()" style="opacity:0;width:0;height:0;"/>
-              <span id="half-track" style="position:absolute;inset:0;background:#DDD;border-radius:9999px;transition:background .2s;"></span>
-              <span id="half-thumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .2s;"></span>
-            </label>
+            <div id="flavor1-list" style="border-top:1px solid #F0F0F0;"></div>
           </div>
-
-          <!-- Half picker (hidden by default) -->
-          <div id="half-picker" style="display:none;">
-            <div id="half-list" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;"></div>
-            <div id="half-selected-name" style="font-size:.75rem;font-weight:600;color:var(--red);margin-top:6px;min-height:18px;"></div>
+          <!-- Meia a Meia — Optional -->
+          <div style="border-top:8px solid #F7F8FA;margin-top:.5rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1.25rem .5rem;">
+              <div>
+                <p style="font-size:.875rem;font-weight:700;color:#3E3E3E;">Meia a Meia</p>
+                <p style="font-size:.75rem;color:#717171;margin-top:2px;">Escolha mais 1 sabor · opcional</p>
+              </div>
+              <span style="font-size:.65rem;font-weight:600;padding:.22rem .6rem;border-radius:9999px;border:1.5px solid #E0E0E0;color:#717171;">Opcional</span>
+            </div>
+            <div id="flavor2-list" style="border-top:1px solid #F0F0F0;"></div>
           </div>
         </div>
 
@@ -874,6 +899,34 @@ function filterCat(cat){
 // ─────────────────────────────────────────────
 // PRODUCT MODAL
 // ─────────────────────────────────────────────
+const PIZZA_FLAVORS = [
+  { id:'mussarela',          name:'Mussarela',             desc:'Molho especial, mussarela e tomate fatiado' },
+  { id:'calabresa',          name:'Calabresa',             desc:'Molho especial, calabresa defumada fatiada, cebola e azeitonas' },
+  { id:'calabresa-especial', name:'Calabresa Especial',    desc:'Molho especial, calabresa, cheddar, pimentão e cebola' },
+  { id:'portuguesa',         name:'Portuguesa',            desc:'Molho especial, presunto, ovos cozidos, ervilha, cebola e azeitonas' },
+  { id:'portuguesa-especial',name:'Portuguesa Especial',   desc:'Molho especial, presunto, ovos, ervilha, pimentão, cebola e catupiry' },
+  { id:'margherita',         name:'Margherita',            desc:'Molho de tomate, mussarela, tomate fatiado e manjericão fresco' },
+  { id:'napolitana',         name:'Napolitana',            desc:'Molho especial, mussarela, tomate fatiado, alho e orégano' },
+  { id:'frango',             name:'Frango',                desc:'Molho especial, frango desfiado temperado, cebola e azeitonas' },
+  { id:'frango-catupiry',    name:'Frango com Catupiry',   desc:'Molho especial, frango desfiado e Catupiry® cremoso' },
+  { id:'frango-bacon',       name:'Frango com Bacon',      desc:'Molho especial, frango desfiado, bacon crocante e milho' },
+  { id:'pepperoni',          name:'Pepperoni',             desc:'Molho especial, mussarela e pepperoni italiano fatiado' },
+  { id:'quatro-queijos',     name:'Quatro Queijos',        desc:'Molho especial, mussarela, queijo prato, parmesão e catupiry' },
+  { id:'bacon',              name:'Bacon',                 desc:'Molho especial, bacon crocante, mussarela e milho verde' },
+  { id:'atum',               name:'Atum',                  desc:'Molho especial, atum ao molho, cebola roxa e azeitonas' },
+  { id:'palmito',            name:'Palmito',               desc:'Molho especial, palmito pupunha, mussarela e azeitonas' },
+  { id:'baiana',             name:'Baiana',                desc:'Molho especial, calabresa moída, pimenta biquinho e cebola' },
+  { id:'americana',          name:'Americana',             desc:'Molho especial, ervilha, milho, ovo cozido, presunto e pimentão' },
+  { id:'bela-montanha',      name:'Bela Montanha',         desc:'Molho especial, mussarela, tomate seco e rúcula fresca' },
+  { id:'primavera',          name:'Primavera',             desc:'Molho especial, mussarela, brócolis, cenoura e alho frito' },
+  { id:'vegetariana',        name:'Vegetariana',           desc:'Molho especial, mussarela, pimentão colorido, cebola e azeitonas' },
+  { id:'nordestina',         name:'Nordestina',            desc:'Molho especial, carne seca desfiada, queijo coalho e cebola' },
+  { id:'toscana',            name:'Toscana',               desc:'Molho especial, linguiça toscana, pimentão e cebola caramelizada' },
+  { id:'caipira',            name:'Caipira',               desc:'Molho especial, frango desfiado, milho verde e requeijão' },
+  { id:'lombinho',           name:'Lombinho',              desc:'Molho especial, lombinho canadense, abacaxi e mussarela' },
+  { id:'carne-seca',         name:'Carne Seca',            desc:'Molho especial, carne seca desfiada, catupiry e cebola' },
+];
+
 const DOCE_FLAVORS = [
   { id:'brigadeiro',    name:'Brigadeiro',          emoji:'🍫' },
   { id:'nutella',       name:'Nutella c/ Morango',   emoji:'🍓' },
@@ -886,8 +939,8 @@ const DOCE_FLAVORS = [
 let pm_product      = null;
 let pm_sizeId       = 'grande';
 let pm_qty          = 1;
-let pm_halfOn       = false;
-let pm_halfProd     = null;
+let pm_flavor1      = null;
+let pm_flavor2      = null;
 let pm_comboSalgada = null;
 let pm_comboDoce    = null;
 
@@ -897,8 +950,8 @@ function openProductModal(id){
   pm_product      = p;
   pm_sizeId       = 'grande';
   pm_qty          = 1;
-  pm_halfOn       = false;
-  pm_halfProd     = null;
+  pm_flavor1      = null;
+  pm_flavor2      = null;
   pm_comboSalgada = null;
   pm_comboDoce    = null;
 
@@ -913,14 +966,15 @@ function openProductModal(id){
 
   const isPizza   = p.category === 'Pizza';
   const isCombo13 = p.id === 13;
-  el('pm-size-section').style.display  = isPizza   ? 'block' : 'none';
-  el('pm-half-section').style.display  = isPizza   ? 'block' : 'none';
-  el('pm-combo-section').style.display = isCombo13 ? 'block' : 'none';
+  el('pm-size-section').style.display   = isPizza   ? 'block' : 'none';
+  el('pm-flavor-section').style.display = isPizza   ? 'block' : 'none';
+  el('pm-combo-section').style.display  = isCombo13 ? 'block' : 'none';
 
   if(isPizza){
     renderSizeGrid();
-    resetHalfToggle();
-    buildHalfList();
+    buildFlavorList();
+    el('fl1-badge').textContent = 'Obrigatório';
+    el('fl1-badge').style.background = 'var(--red)';
   }
   if(isCombo13) buildComboSection();
 
@@ -950,46 +1004,36 @@ function selectSize(id){
   updatePmTotal();
 }
 
-function resetHalfToggle(){
-  pm_halfOn = false;
-  pm_halfProd = null;
-  const tog = document.getElementById('half-toggle');
-  tog.checked = false;
-  document.getElementById('half-track').style.background = '#DDD';
-  document.getElementById('half-thumb').style.transform = 'translateX(0)';
-  document.getElementById('half-picker').style.display = 'none';
-  document.getElementById('half-selected-name').textContent = '';
-}
-
-function onHalfToggle(){
-  pm_halfOn = document.getElementById('half-toggle').checked;
-  const track = document.getElementById('half-track');
-  const thumb = document.getElementById('half-thumb');
-  const picker = document.getElementById('half-picker');
-  track.style.background = pm_halfOn ? 'var(--red)' : '#DDD';
-  thumb.style.transform = pm_halfOn ? 'translateX(20px)' : 'translateX(0)';
-  picker.style.display = pm_halfOn ? 'block' : 'none';
-  if(!pm_halfOn){ pm_halfProd=null; document.getElementById('half-selected-name').textContent=''; }
-  updatePmTotal();
-}
-
-function buildHalfList(){
-  const pizzas = getProducts().filter(p=>p.category==='Pizza' && p.id!==pm_product.id);
-  document.getElementById('half-list').innerHTML = pizzas.map(p=>{
-    const fallback=`https://placehold.co/80x80/fee2e2/c41230?text=${encodeURIComponent(p.name.charAt(0))}`;
-    return `<div class="half-thumb" id="ht-${p.id}" onclick="selectHalf(${p.id})">
-      <img src="${p.image||fallback}" alt="${esc(p.name)}" style="width:100%;height:60px;object-fit:cover;display:block;" onerror="this.src='${fallback}'"/>
-      <div style="padding:4px 5px;font-size:.6rem;font-weight:600;color:var(--text);line-height:1.2;">${esc(p.name)}</div>
+function buildFlavorList(){
+  const makeRow = (num, f) => {
+    const sel = num===1 ? pm_flavor1 : pm_flavor2;
+    const isOn = sel && sel.id===f.id;
+    return `<div class="flavor-row${isOn?' fl-on':''}" onclick="selectFlavor(${num},'${f.id}')">
+      <div style="flex:1;min-width:0;">
+        <p style="font-size:.9rem;font-weight:600;color:#3E3E3E;line-height:1.3;">${esc(f.name)}</p>
+        <p style="font-size:.775rem;color:#717171;margin-top:3px;line-height:1.4;">${esc(f.desc)}</p>
+      </div>
+      <div class="fl-radio${isOn?' fl-on':''}"></div>
     </div>`;
-  }).join('');
+  };
+  document.getElementById('flavor1-list').innerHTML = PIZZA_FLAVORS.map(f=>makeRow(1,f)).join('');
+  const others = pm_flavor1 ? PIZZA_FLAVORS.filter(f=>f.id!==pm_flavor1.id) : PIZZA_FLAVORS;
+  document.getElementById('flavor2-list').innerHTML = others.map(f=>makeRow(2,f)).join('');
 }
 
-function selectHalf(id){
-  const p = getProducts().find(x=>x.id===id);
-  pm_halfProd = p || null;
-  document.querySelectorAll('.half-thumb').forEach(el=>el.classList.remove('active'));
-  if(p){ document.getElementById(`ht-${id}`)?.classList.add('active'); }
-  document.getElementById('half-selected-name').textContent = p ? `Metade: ${p.name}` : '';
+function selectFlavor(num, id){
+  const f = PIZZA_FLAVORS.find(x=>x.id===id);
+  if(!f) return;
+  if(num===1){
+    pm_flavor1 = f;
+    if(pm_flavor2 && pm_flavor2.id===id) pm_flavor2 = null;
+    const badge = document.getElementById('fl1-badge');
+    badge.textContent = '✓ ' + f.name;
+    badge.style.background = '#1DAA54';
+  } else {
+    pm_flavor2 = pm_flavor2?.id===id ? null : f;
+  }
+  buildFlavorList();
   updatePmTotal();
 }
 
@@ -1032,10 +1076,7 @@ function calcPmUnitPrice(){
   if(!pm_product) return 0;
   const size = PIZZA_SIZES.find(s=>s.id===pm_sizeId) || PIZZA_SIZES[2];
   if(pm_product.category !== 'Pizza') return pm_product.price;
-  const basePrice = pm_halfOn && pm_halfProd
-    ? Math.max(pm_product.price, pm_halfProd.price)
-    : pm_product.price;
-  return basePrice * size.mult;
+  return pm_product.price * size.mult;
 }
 
 function updatePmTotal(){
@@ -1052,6 +1093,10 @@ function addToCartFromModal(){
     if(!pm_comboDoce)   { showToast('Escolha o sabor do brotinho doce! 🍫','error'); return; }
   }
 
+  if(pm_product.category === 'Pizza' && pm_product.id !== 13){
+    if(!pm_flavor1){ showToast('Escolha o sabor da pizza! 🍕','error'); return; }
+  }
+
   const size = PIZZA_SIZES.find(s=>s.id===pm_sizeId);
   const unit = calcPmUnitPrice();
 
@@ -1062,9 +1107,9 @@ function addToCartFromModal(){
     halfName  = pm_comboDoce;
     key = `${pm_product.id}_s${pm_comboSalgada}_d${pm_comboDoce}`;
   } else {
-    halfName  = pm_halfOn && pm_halfProd ? pm_halfProd.name : null;
-    sizeLabel = pm_product.category==='Pizza' ? size?.label : null;
-    key = `${pm_product.id}_${pm_sizeId}_${pm_halfProd?.id||''}`;
+    sizeLabel = pm_product.category==='Pizza' ? `${size?.label} · ${pm_flavor1.name}` : null;
+    halfName  = pm_flavor2 ? pm_flavor2.name : null;
+    key = `${pm_product.id}_${pm_sizeId}_${pm_flavor1?.id||''}_${pm_flavor2?.id||''}`;
   }
 
   const existing = cart.find(c=>c.key===key);
